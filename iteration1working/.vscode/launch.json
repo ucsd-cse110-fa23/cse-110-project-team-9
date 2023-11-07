@@ -1,0 +1,16 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "audio",
+            "request": "launch",
+            "mainClass": "client.PantryPalApp",
+            "vmArgs": "--module-path '/Users/danielcarrascoza/Desktop/cse15L /cse-15l-lab-reports /cse-110-project-team-9/iteration1working/lib' --add-modules javafx.controls,javafx.fxml"
+
+        }
+    ]
+}

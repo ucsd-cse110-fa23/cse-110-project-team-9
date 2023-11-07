@@ -4,14 +4,11 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
         {
             "type": "java",
-            "name": "PantryPalAppRun",
+            "name": "Current File",
             "request": "launch",
-            "mainClass": "client.PantryPal",
-            "vmArgs": "/Users/bryceblair/Documents/GitHub/cse100milestone1/lib"
-
+            "mainClass": "${file}"
         }
     ]
 }
