@@ -1,6 +1,6 @@
 package test;
 //package client;
-package client;
+//package client;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
