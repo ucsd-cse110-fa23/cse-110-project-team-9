@@ -1,4 +1,4 @@
-//package test;
+package test;
 //package client;
 package client;
 
