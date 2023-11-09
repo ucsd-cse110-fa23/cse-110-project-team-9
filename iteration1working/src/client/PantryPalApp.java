@@ -236,7 +236,6 @@ class ChatGPT {
     }
 
 
-
     public static String getResult() {
         return result;
     }
@@ -248,6 +247,7 @@ class Recipe extends HBox {
     private Button deleteButton;
     private Button detailedView;
     private Label recipeLabel;
+    private String recipeTotal;
 
     String defaultButtonStyle = "-fx-border-color: #000000; -fx-font: 12 arial; -fx-pref-height: 30px;";
     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-height: 30px; -fx-text-fill: black;";
@@ -272,6 +272,7 @@ class Recipe extends HBox {
         recipeLabel.setStyle(defaultLabelStyle);
         recipeLabel.setTextAlignment(TextAlignment.CENTER);
 
+        
         this.getChildren().addAll(recipeLabel, detailedView);
 
         addListeners();
@@ -291,13 +292,21 @@ class Recipe extends HBox {
         return recipeLabel;
     }
 
-    public void setRecipe(String newRecipe) {
+    public void setRecipeName(String newRecipe) {//set title of recipe
         recipeLabel.setText(newRecipe);
+    }
+
+    public void setRecipeTotal(String recipe){
+        recipeTotal=recipe;//put entire recipe in string
+    }
+
+    public String getRecipeTotal(){
+        return recipeTotal;
     }
 
     public void addListeners(){
         detailedView.setOnAction(e ->{
-            DetailedView detailedView = new DetailedView(ChatGPT.getResult());
+            DetailedView detailedView = new DetailedView(getRecipeTotal());
             //DetailedView detailedView = new DetailedView("food");
         detailedView.show();
     });

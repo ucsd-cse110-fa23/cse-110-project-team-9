@@ -106,11 +106,12 @@ public class AppFrame extends Stage {
             recipeList.getChildren().add(recipe);
             audioToText();
             ingredientsToRecipe();
-            recipe.setRecipe(ChatGPT.returnPrompt());
+            recipe.setRecipeName(ChatGPT.returnPrompt());
+            recipe.setRecipeTotal(ChatGPT.getResult());
             //recipe.setRecipe("eat");
             popupStage.close();
             recipe.getDeleteButton().setOnAction(e3->{
-                recipeList.getChildren().remove(recipe);
+                recipeList.deleteRecipe(recipe);
         });
         });
 
@@ -172,6 +173,10 @@ public class AppFrame extends Stage {
             this.setSpacing(3); // sets spacing between recipes
             this.setPrefSize(500, 560);
             this.setStyle("-fx-background-color: #F0F8FF;");
+        }
+
+        public void deleteRecipe(Recipe recipe){
+            this.getChildren().remove(recipe);
         }
     }
     private void audioToText() {

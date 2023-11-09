@@ -26,7 +26,7 @@ public class DetailedView extends Stage {
         Scene detailedScene = new Scene(mainLayout, 500, 600);
         setScene(detailedScene);
         recipeData=recipeText;//store recipeText in field.
-    }
+    }                                   
 
     private BorderPane createMainLayout(String recipeText) {
         BorderPane root = new BorderPane();
