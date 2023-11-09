@@ -8,6 +8,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.TextAlignment;
 import javafx.geometry.Insets;
@@ -32,7 +33,7 @@ public class DetailedView extends Stage {
         BorderPane root = new BorderPane();
 
         Header header = new Header();
-        Text recipeAsText = new Text(recipeText);
+        TextArea recipeAsText = new TextArea(recipeText);//create edditable text area
         ScrollPane scroll = new ScrollPane(recipeAsText);
         scroll.setFitToWidth(true);
         scroll.setFitToHeight(true);
@@ -63,9 +64,12 @@ public class DetailedView extends Stage {
             setStyle("-fx-background-color: #F0F8FF;");
             setSpacing(15);
 
-            Button backButton = new Button("Save Recipe");//is back button save?
-            backButton.setOnAction(e -> close());
-            backButton.setStyle("-fx-font-weight: bold; -fx-font-size: 20; -fx-background-color: Green");
+            Button saveButton = new Button("Save Recipe");//is back button save?
+            saveButton.setOnAction(e -> {
+                
+                close();
+            });
+            saveButton.setStyle("-fx-font-weight: bold; -fx-font-size: 20; -fx-background-color: Green");
             Button editButton= new Button("edit recipe");
            // editButton.setOnAction(e-> 
                 //recipeText=editText()
@@ -81,7 +85,7 @@ public class DetailedView extends Stage {
             deleteButton.setStyle("-fx-font-weight: bold; -fx-font-size: 20; -fx-background-color: Green");
 
 
-            getChildren().addAll(backButton);
+            getChildren().addAll(saveButton);
             getChildren().addAll(editButton);
             getChildren().addAll(deleteButton);
             setAlignment(Pos.CENTER);
