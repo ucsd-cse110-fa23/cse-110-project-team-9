@@ -9,8 +9,7 @@
             "name": "audio",
             "request": "launch",
             "mainClass": "client.PantryPalApp",
-            "vmArgs": "--module-path '/Users/danielcarrascoza/Desktop/cse15L /cse-15l-lab-reports /cse-110-project-team-9/iteration1working/lib' --add-modules javafx.controls,javafx.fxml"
-
+            "vmArgs": "--module-path 'C:/Users/prana/OneDrive/Documents/UCSD/3rd year courses/CSE 110/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
         }
     ]
 }

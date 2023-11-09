@@ -228,7 +228,7 @@ class ChatGPT {
         String title = "";
         String delimiter = "Ingredients"; // Use "\n" as the delimiter
         title = result.replace("\n", "");
-        int delimiterindex = result.indexOf(delimiter);
+        int delimiterindex = title.indexOf(delimiter);
         if (delimiterindex != -1){
             title = title.substring(0, delimiterindex);
         }
