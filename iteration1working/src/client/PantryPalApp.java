@@ -1,4 +1,5 @@
 package client;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -175,6 +176,8 @@ class ChatGPT {
     public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
 
         // Set request parameters
+        String prompt1 = "Create a ";
+        String prompt2 = " recipe with the following ingredients: ";
         String prompt = "Create a recipe with the following ingredients: ";
         int maxTokens = 1000;
 
@@ -186,6 +189,10 @@ class ChatGPT {
 
         if (args.length > 0 && args[0] != null) {
             prompt += args[0];
+        }
+
+        if (args.length > 1 && args[1] != null) {
+            prompt = prompt1 + args[1] + prompt2 + args[0];
         }
 
         // Create a request body which you will pass into request object
@@ -224,18 +231,16 @@ class ChatGPT {
 
     }
 
-    public static String returnPrompt(){
+    public static String returnPrompt() {
         String title = "";
         String delimiter = "Ingredients"; // Use "\n" as the delimiter
         title = result.replace("\n", "");
-        int delimiterindex = result.indexOf(delimiter);
-        if (delimiterindex != -1){
+        int delimiterindex = title.indexOf(delimiter);
+        if (delimiterindex != -1) {
             title = title.substring(0, delimiterindex);
         }
         return title;
     }
-
-
 
     public static String getResult() {
         return result;
@@ -248,17 +253,19 @@ class Recipe extends HBox {
     private Button deleteButton;
     private Button detailedView;
     private Label recipeLabel;
+    private String recipeTotal;
+
+    private DetailedView currDetailedView;
 
     String defaultButtonStyle = "-fx-border-color: #000000; -fx-font: 12 arial; -fx-pref-height: 30px;";
     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-height: 30px; -fx-text-fill: black;";
 
     Recipe() {
-        this.setPrefSize(400, 1000); // sets size of recipe
+        this.setPrefSize(600, 30); // sets size of recipe
         this.setStyle("-fx-background-color: #F0F8FF; -fx-border-width: 0;");
 
         deleteButton = new Button("X");
 
-       
         deleteButton.setTextAlignment(TextAlignment.CENTER);
         deleteButton.setPrefHeight(Double.MAX_VALUE);
         deleteButton.setStyle(
@@ -267,6 +274,7 @@ class Recipe extends HBox {
 
         detailedView = new Button("Detailed View");
         detailedView.setStyle(defaultButtonStyle);
+        // detailedView.setAlignment(Pos.RIGHT);
 
         recipeLabel = new Label("Recipe: "); // create task name text field
         recipeLabel.setStyle(defaultLabelStyle);
@@ -274,7 +282,8 @@ class Recipe extends HBox {
 
         this.getChildren().addAll(recipeLabel, detailedView);
 
-        addListeners();
+        showDetailedView();
+        // recipeTotal = currDetailedView.saveNewRecipe();
         // audioFormat = getAudioFormat();
 
     }
@@ -291,16 +300,25 @@ class Recipe extends HBox {
         return recipeLabel;
     }
 
-    public void setRecipe(String newRecipe) {
+    public void setRecipeName(String newRecipe) {// set title of recipe
         recipeLabel.setText(newRecipe);
     }
 
-    public void addListeners(){
-        detailedView.setOnAction(e ->{
-            DetailedView detailedView = new DetailedView(ChatGPT.getResult());
-            //DetailedView detailedView = new DetailedView("food");
-        detailedView.show();
-    });
+    public void setRecipeTotal(String recipe) {
+        recipeTotal = recipe;// put entire recipe in string
+    }
+
+    public String getRecipeTotal() {
+        return recipeTotal;
+    }
+
+    public void showDetailedView() {
+        detailedView.setOnAction(e -> {
+            currDetailedView = new DetailedView(getRecipeTotal());
+            // recipeTotal = currDetailedView.saveNewRecipe();
+            currDetailedView.show();
+        });
+
     }
 }
 
@@ -312,7 +330,7 @@ public class PantryPalApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        //RecipeController recipeController = new RecipeController(primaryStage);
+        // RecipeController recipeController = new RecipeController(primaryStage);
         AppFrame appFrame = new AppFrame(); // Create the main stage
         appFrame.show(); // Show the main stage
     }
