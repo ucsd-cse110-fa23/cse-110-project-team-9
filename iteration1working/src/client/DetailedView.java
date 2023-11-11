@@ -8,6 +8,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.TextAlignment;
 import javafx.geometry.Insets;
@@ -19,23 +20,29 @@ import java.util.Collections;
 import javax.sound.sampled.*;
 
 public class DetailedView extends Stage {
+    private String recipeData;
+    private static TextArea recipeAsText;
 
-    public DetailedView(String recipeText) {
+    public DetailedView(String recipeText, Recipe recipe) {
         setTitle("Detailed View");
-        BorderPane mainLayout = createMainLayout(recipeText);
-        Scene detailedScene = new Scene(mainLayout, 500, 600);
+        BorderPane mainLayout = createMainLayout(recipeText, recipe);
+        Scene detailedScene = new Scene(mainLayout, 600, 600);
         setScene(detailedScene);
+        recipeData = recipeText;// store recipeText in field.
+
     }
 
-    private BorderPane createMainLayout(String recipeText) {
+    private BorderPane createMainLayout(String recipeText, Recipe recipe) {
         BorderPane root = new BorderPane();
 
-        Header header = new Header();
-        Text recipeAsText = new Text(recipeText);
+        DVHeader header = new DVHeader();
+        DVFooter footer = new DVFooter(recipe);
+
+        recipeAsText = new TextArea(recipeText);// create editable text area
+        recipeAsText.setEditable(false);
         ScrollPane scroll = new ScrollPane(recipeAsText);
         scroll.setFitToWidth(true);
         scroll.setFitToHeight(true);
-        Footer footer = new Footer();
 
         root.setTop(header);
         root.setCenter(scroll);
@@ -44,28 +51,67 @@ public class DetailedView extends Stage {
         return root;
     }
 
-    class Header extends BorderPane {
-        Header() {
+    public String saveNewRecipe() {
+        return recipeAsText.getText();
+    }
+
+    class DVHeader extends BorderPane {
+        DVHeader() {
             setPrefSize(500, 60);
-            setStyle("-fx-background-color: #F0F8FF;");
+            setStyle("-fx-background-color: #e8e113;");
 
             Text titleText = new Text("Detailed View");
-            titleText.setStyle("-fx-font-weight: bold; -fx-font-size: 20;");
+            titleText.setStyle("-fx-font-weight: bold; -fx-font-size: 20; -fx-background-color: Orange");
             setCenter(titleText);
         }
     }
 
-    class Footer extends HBox {
-        Footer() {
+    class DVFooter extends HBox {
+        // private Button ediButton;
+        DVFooter(Recipe recipe) {
             setPrefSize(500, 60);
             setStyle("-fx-background-color: #F0F8FF;");
             setSpacing(15);
+            /*
+             * Button saveButton = new Button("Save Recipe");//is back button save?
+             * saveButton.setOnAction(e -> {
+             * 
+             * close();
+             * });
+             */
+            // saveButton.setStyle("-fx-font-weight: bold; -fx-font-size: 20;
+            // -fx-background-color: Green");
 
-            Button backButton = new Button("Back");
-            backButton.setOnAction(e -> close());
+            Button editButton = new Button("Edit Recipe");
 
-            getChildren().addAll(backButton);
+            editButton.setOnAction(e -> {
+                recipeAsText.setEditable(true);
+                editButton.setStyle("-fx-font-weight: bold; -fx-font-size: 20; -fx-background-color: Green");
+            });
+            // editButton.setOnAction(e->
+            // recipeText=editText()
+            // );
+            editButton.setStyle("-fx-font-weight: bold; -fx-font-size: 20");
+            /*
+             * Button saveButton = new Button("Save Changes");
+             * saveButton.setOnAction(e -> {
+             * recipeAsText.setEditable(false);
+             * });
+             */
+            Button closeButton = new Button("Save and Close Detailed View");
+            closeButton.setOnAction(e -> {
+                recipeAsText.setEditable(false);
+                recipe.setRecipeTotal(recipeAsText.getText());
+
+                close();
+            });// add method to delete the recipe as a whole
+            closeButton.setStyle("-fx-font-weight: bold; -fx-font-size: 20");
+
+            // getChildren().addAll(saveButton);
+            getChildren().addAll(editButton);
+            getChildren().addAll(closeButton);
             setAlignment(Pos.CENTER);
         }
+
     }
 }
