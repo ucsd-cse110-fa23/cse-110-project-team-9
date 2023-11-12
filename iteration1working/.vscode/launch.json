@@ -10,7 +10,10 @@
             "request": "launch",
             "mainClass": "client.PantryPalApp",
             "vmArgs": "--module-path 'C:/Users/prana/OneDrive/Documents/UCSD/3rd year courses/CSE 110/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
+<<<<<<< Updated upstream:iteration1working/.vscode/launch.json
 
+=======
+>>>>>>> Stashed changes:.vscode/launch.json
         }
     ]
 }
