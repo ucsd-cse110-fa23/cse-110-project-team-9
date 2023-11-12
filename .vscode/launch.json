@@ -11,6 +11,13 @@
             "mainClass": "client.PantryPalApp",
             "vmArgs": "--module-path '/Users/luke/Documents/javafx-sdk-21.0.1/lib' --add-modules javafx.controls,javafx.fxml"
 
+        },
+        {
+            "type": "java",
+            "name": "MyServer",
+            "request": "launch",
+            "mainClass": "server.MyServer",
+            "projectName": "cse-110-project-team-9_da3bc671"
         }
     ]
 }

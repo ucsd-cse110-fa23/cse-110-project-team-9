@@ -1,26 +1,5 @@
 package client;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONException;
-
-import java.io.*;
-import java.net.*;
-import org.json.*;
-
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -30,7 +9,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.text.TextAlignment;
 import javafx.geometry.Insets;
 import javafx.scene.text.*;
@@ -39,7 +17,154 @@ import java.rmi.RMISecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import javax.sound.sampled.*;
-//import java.util.Scanner;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.io.IOException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONException;
+
+import java.io.*;
+import java.net.*;
+import org.json.*;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.net.URI;
+
+
+public class Model {
+    public String performRequest(String method, String name, String[] typeAndName, String query) {
+        // Implement your HTTP request logic here and return the response
+
+        try {
+            String urlString = "http://localhost:8100/";
+            if (query != null) {
+                urlString += "?=" + query;
+            }
+            URL url = new URI(urlString).toURL();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod(method);
+            conn.setDoOutput(true);
+
+            if (method.equals("POST") || method.equals("PUT")) {
+                OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+                out.write(name + "," + typeAndName[0] + "," + typeAndName[1]);
+                out.flush();
+                out.close();
+            }
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String response = in.readLine();
+            in.close();
+            return response;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return "Error: " + ex.getMessage();
+        }
+    }
+
+}
+
+class ChatGPT {
+    private static final String API_ENDPOINT = "https://api.openai.com/v1/completions";
+    private static final String API_KEY = "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";
+    private static final String MODEL = "text-davinci-003";
+    private static String result;
+
+    public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
+
+        // Set request parameters
+        String prompt1 = "Create a ";
+        String prompt2 = " recipe with the following ingredients: ";
+        String prompt = "Create a recipe with the following ingredients: ";
+        int maxTokens = 1000;
+
+        /*
+         * if (args.length > 0 && args[0] != null) {
+         * maxTokens = Integer.parseInt(args[0]);
+         * }
+         */
+
+        if (args.length > 0 && args[0] != null) {
+            prompt += args[0];
+        }
+
+        if (args.length > 1 && args[1] != null) {
+            prompt = prompt1 + args[1] + prompt2 + args[0];
+        }
+
+        // Create a request body which you will pass into request object
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("model", MODEL);
+        requestBody.put("prompt", prompt);
+        requestBody.put("max_tokens", maxTokens);
+        requestBody.put("temperature", 1.0);
+
+        // Create the HTTP Client
+        HttpClient client = HttpClient.newHttpClient();
+
+        // Create the request object
+        HttpRequest request = HttpRequest
+                .newBuilder()
+                .uri(URI.create(API_ENDPOINT))
+                .header("Content-Type", "application/json")
+                .header("Authorization", String.format("Bearer %s", API_KEY))
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                .build();
+
+        // Send the request and receive the response
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // Process the response
+        String responseBody = response.body();
+
+        JSONObject responseJson = new JSONObject(responseBody);
+
+        JSONArray choices = responseJson.getJSONArray("choices");
+        String generatedText = choices.getJSONObject(0).getString("text");
+
+        result = generatedText;
+
+        // System.out.println(generatedText);
+
+    }
+
+    public static String returnPrompt() {
+        String title = "";
+        String delimiter = "Ingredients"; // Use "\n" as the delimiter
+        title = result.replace("\n", "");
+        int delimiterindex = title.indexOf(delimiter);
+        if (delimiterindex != -1) {
+            title = title.substring(0, delimiterindex);
+        }
+        return title;
+    }
+
+    public static String getResult() {
+        return result;
+    }
+}
 
 class Whisper {
 
@@ -167,95 +292,16 @@ class Whisper {
 
 }
 
-class ChatGPT {
-    private static final String API_ENDPOINT = "https://api.openai.com/v1/completions";
-    private static final String API_KEY = "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";
-    private static final String MODEL = "text-davinci-003";
-    private static String result;
-
-    public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
-
-        // Set request parameters
-        String prompt1 = "Create a ";
-        String prompt2 = " recipe with the following ingredients: ";
-        String prompt = "Create a recipe with the following ingredients: ";
-        int maxTokens = 1000;
-
-        /*
-         * if (args.length > 0 && args[0] != null) {
-         * maxTokens = Integer.parseInt(args[0]);
-         * }
-         */
-
-        if (args.length > 0 && args[0] != null) {
-            prompt += args[0];
-        }
-
-        if (args.length > 1 && args[1] != null) {
-            prompt = prompt1 + args[1] + prompt2 + args[0];
-        }
-
-        // Create a request body which you will pass into request object
-        JSONObject requestBody = new JSONObject();
-        requestBody.put("model", MODEL);
-        requestBody.put("prompt", prompt);
-        requestBody.put("max_tokens", maxTokens);
-        requestBody.put("temperature", 1.0);
-
-        // Create the HTTP Client
-        HttpClient client = HttpClient.newHttpClient();
-
-        // Create the request object
-        HttpRequest request = HttpRequest
-                .newBuilder()
-                .uri(URI.create(API_ENDPOINT))
-                .header("Content-Type", "application/json")
-                .header("Authorization", String.format("Bearer %s", API_KEY))
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
-                .build();
-
-        // Send the request and receive the response
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        // Process the response
-        String responseBody = response.body();
-
-        JSONObject responseJson = new JSONObject(responseBody);
-
-        JSONArray choices = responseJson.getJSONArray("choices");
-        String generatedText = choices.getJSONObject(0).getString("text");
-
-        result = generatedText;
-
-        // System.out.println(generatedText);
-
-    }
-
-    public static String returnPrompt() {
-        String title = "";
-        String delimiter = "Ingredients"; // Use "\n" as the delimiter
-        title = result.replace("\n", "");
-        int delimiterindex = title.indexOf(delimiter);
-        if (delimiterindex != -1) {
-            title = title.substring(0, delimiterindex);
-        }
-        return title;
-    }
-
-    public static String getResult() {
-        return result;
-    }
-
-}
-
 class Recipe extends HBox {
 
     private Button deleteButton;
     private Button detailedView;
     private Label recipeLabel;
     private String recipeTotal;
+    private String recipeType;
 
     private DetailedView currDetailedView;
+    private DetailedController detailedController;
 
     String defaultButtonStyle = "-fx-border-color: #000000; -fx-font: 12 arial; -fx-pref-height: 30px;";
     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-height: 30px; -fx-text-fill: black;";
@@ -281,11 +327,22 @@ class Recipe extends HBox {
         recipeLabel.setTextAlignment(TextAlignment.CENTER);
 
         this.getChildren().addAll(recipeLabel, detailedView);
+        currDetailedView = new DetailedView(this);
+        Model model = new Model();
+        detailedController = new DetailedController(currDetailedView, model);
+        //currDetailedView.getStage().show();
 
-        showDetailedView();
-        // recipeTotal = currDetailedView.saveNewRecipe();
-        // audioFormat = getAudioFormat();
+        deleteButton.setOnAction(e -> {
+            Controller.handleDeleteButton(e);
+        });
+    }
 
+    public DetailedView getDetailedView(){
+        return currDetailedView;
+    }
+
+    public void setDetailedView(DetailedView view){
+        currDetailedView = view;
     }
 
     public Button getDetailedViewButton() {
@@ -296,8 +353,16 @@ class Recipe extends HBox {
         return deleteButton;
     }
 
-    public Label getRecipeLabelName() {
-        return recipeLabel;
+    public String getRecipeLabelName() {
+        return recipeLabel.getText();
+    }
+
+    public String getRecipeType() {
+        return recipeType;
+    }
+
+    public void setRecipeType(String type) {
+        recipeType = type;
     }
 
     public void setRecipeName(String newRecipe) {// set title of recipe
@@ -311,27 +376,16 @@ class Recipe extends HBox {
     public String getRecipeTotal() {
         return recipeTotal;
     }
-
-    public void showDetailedView() {
-        detailedView.setOnAction(e -> {
-            // recipeTotal = currDetailedView.saveNewRecipe();
-            currDetailedView = new DetailedView(getRecipeTotal(), this);
-            currDetailedView.show();
-        });
-
+    
+    /* 
+    public void setDeleteButtonAction(EventHandler<ActionEvent> eventHandler) {
+        System.out.println("deleting");
+        deleteButton.setOnAction(eventHandler);
     }
-}
+    */
 
-public class PantryPalApp extends Application {
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-    @Override
-    public void start(Stage primaryStage) {
-        // RecipeController recipeController = new RecipeController(primaryStage);
-        AppFrame appFrame = new AppFrame(); // Create the main stage
-        appFrame.show(); // Show the main stage
+    public void setGetButtonAction(EventHandler<ActionEvent> eventHandler) {
+        System.out.println("detailed viewing");
+        detailedView.setOnAction(eventHandler);
     }
 }

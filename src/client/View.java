@@ -24,7 +24,10 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Modality;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
@@ -38,26 +41,59 @@ import java.util.ArrayList;
 import java.util.Collections;
 import javax.sound.sampled.*;
 
-public class AppFrame extends Stage {
+public class View{
 
+    private Stage appFrame;
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
     private Label recordingLabel;
-    // private RecipeController recipeController;
     private RecipeList recipeList;
-    private String currRecipeText;
-    private String currRecipeType;
 
-    Button addButton;
+    private Recipe currRecipe;
 
-    public AppFrame() {
-        setTitle("Recipe List View");
+    private Button saveButton;
+    private Button addButton;
 
+    public Stage getAppFrame(){
+        return appFrame;
+    }
+
+    public Recipe getRecipe(){
+        return currRecipe;
+    }
+    public String getRecipeText(){
+        return currRecipe.getRecipeTotal();
+    }
+
+    public String getRecipeType(){
+        return currRecipe.getRecipeType();
+    }
+
+    public String getRecipeName(){
+        return currRecipe.getRecipeLabelName();
+    }
+
+    public RecipeList getRecipeList(){
+        return recipeList;
+    }
+
+    public void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    public View(Stage stage) {
+        currRecipe = new Recipe();
+        appFrame = stage;
+        appFrame.setTitle("Recipe List View");
         BorderPane mainLayout = createMainLayout();
         Scene mainScene = new Scene(mainLayout, 600, 600);
         audioFormat = getAudioFormat();
-        setScene(mainScene);
-
+        appFrame.setScene(mainScene);
+        saveButton = new Button("Save Recipe");
     }
 
     private BorderPane createMainLayout() {
@@ -92,7 +128,7 @@ public class AppFrame extends Stage {
 
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.initOwner(this); // Set the main stage as the owner
+        popupStage.initOwner(this.appFrame); // Set the main stage as the owner
         popupStage.setTitle("Creating Recipe");
 
         Label recordingLabel1 = new Label("Recording. . .");
@@ -112,7 +148,7 @@ public class AppFrame extends Stage {
             stopRecording();
             audioToText();
             setType();
-            String typeLabel = "Recipe Type: " + currRecipeType;
+            String typeLabel = "Recipe Type: " + currRecipe.getRecipeType();
             recipeType.setText(typeLabel);
             recipeType.setVisible(true);
         });
@@ -128,29 +164,31 @@ public class AppFrame extends Stage {
             stopRecording();
             audioToText();
             ingredientsToRecipe();
-            currRecipeText = ChatGPT.getResult(); 
-            String recipeLabel = "Recipe Preview: " + currRecipeText;
+            currRecipe.setRecipeTotal(ChatGPT.getResult()); 
+            currRecipe.setRecipeName(ChatGPT.returnPrompt());
+            String recipeLabel = "Recipe Preview: " + currRecipe.getRecipeLabelName();
             recipeText.setText(recipeLabel);
             recipeText.setVisible(true);
-
-            // recipe.setRecipe("eat");
         });
 
-        Button closeButton = new Button("Cancel Recipe");
+        Button closeButton = new Button("Back");
         closeButton.setOnAction(e -> popupStage.close());
 
+
+        /* 
         recipe.getDeleteButton().setOnAction(e -> {
             recipeList.deleteRecipe(recipe);
         });
-
-        Button saveRecipe = new Button("Save Recipe");
-        saveRecipe.setOnAction(e -> {
+        */
+        
+        /* 
+        saveButton.setOnAction(e -> {
             recipe.setRecipeName(ChatGPT.returnPrompt());
             recipe.setRecipeTotal(currRecipeText);
             recipeList.getChildren().add(recipe);
             popupStage.close();
-
         });
+        */
 
         BorderPane popupLayout = new BorderPane();
         Scene popupScene = new Scene(popupLayout, 600, 600);
@@ -174,8 +212,8 @@ public class AppFrame extends Stage {
 
         VBox middleBox = new VBox();
 
-        String typeLabel = "Recipe Type: " + currRecipeType;
-        String recipeLabel = "Recipe Preview: " + currRecipeText;
+        String typeLabel = "Recipe Type: " + currRecipe.getRecipeType();
+        String recipeLabel = "Recipe Preview: " + currRecipe.getRecipeLabelName();
         recipeType.setText(typeLabel);
         recipeText.setText(recipeLabel);
         middleBox.getChildren().addAll(recipeType, recipeText);
@@ -187,12 +225,16 @@ public class AppFrame extends Stage {
         popupLayout.setCenter(scroller);
 
         HBox bottomBox = new HBox();
-        bottomBox.getChildren().addAll(closeButton, saveRecipe);
+        bottomBox.getChildren().addAll(closeButton, saveButton);
         bottomBox.setAlignment(Pos.CENTER);
         bottomBox.setSpacing(5);
         popupLayout.setBottom(bottomBox);
 
         popupStage.showAndWait();
+    }
+
+    public void setSaveButtonAction(EventHandler<ActionEvent> eventHandler) {
+        saveButton.setOnAction(eventHandler);
     }
 
     private void audioToText() {
@@ -207,7 +249,7 @@ public class AppFrame extends Stage {
     }
 
     private void ingredientsToRecipe() {
-        String[] args = new String[] { Whisper.getResult(), currRecipeType };
+        String[] args = new String[] { Whisper.getResult(), currRecipe.getRecipeType() };
         try {
             ChatGPT.main(args);
         } catch (IOException e) {
@@ -221,7 +263,7 @@ public class AppFrame extends Stage {
 
     private void setType() {
         String[] args = new String[] { Whisper.getResult() };
-        currRecipeType = args[0];
+        currRecipe.setRecipeType(args[0]);
     }
 
     private AudioFormat getAudioFormat() {

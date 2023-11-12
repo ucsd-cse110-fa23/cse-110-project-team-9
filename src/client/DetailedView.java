@@ -3,14 +3,14 @@ package client;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.text.TextAlignment;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.text.*;
 import java.io.*;
@@ -18,18 +18,53 @@ import java.rmi.RMISecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import javax.sound.sampled.*;
+import javafx.scene.control.TextArea;
 
-public class DetailedView extends Stage {
-    private String recipeData;
-    private static TextArea recipeAsText;
+public class DetailedView {
+    private Stage stage;
+    private TextArea recipeAsText;
+    private Recipe recipe;
+    private Button closeButton;
 
-    public DetailedView(String recipeText, Recipe recipe) {
-        setTitle("Detailed View");
-        BorderPane mainLayout = createMainLayout(recipeText, recipe);
+    public DetailedView(Recipe inputRecipe) {
+        stage = new Stage();
+        recipe = inputRecipe;
+        stage.setTitle("Detailed View");
+        BorderPane mainLayout = createMainLayout(inputRecipe.getRecipeTotal(), recipe);
         Scene detailedScene = new Scene(mainLayout, 600, 600);
-        setScene(detailedScene);
-        recipeData = recipeText;// store recipeText in field.
+        stage.setScene(detailedScene);
+    }
 
+    public TextArea getRecipeAsText(){
+        return recipeAsText;
+    }
+
+    public Stage getStage(){
+        return stage;
+    }
+
+    public Recipe getRecipe(){
+        return recipe;
+    }
+
+    public String getRecipeName(){
+        return recipe.getRecipeLabelName();
+    }
+
+    public String getRecipeType(){
+        return recipe.getRecipeType();
+    }
+
+    public String getRecipeTotal(){
+        return recipe.getRecipeTotal();
+    }
+
+    public void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
     private BorderPane createMainLayout(String recipeText, Recipe recipe) {
@@ -65,8 +100,14 @@ public class DetailedView extends Stage {
             setCenter(titleText);
         }
     }
+    
+    public void setPutButtonAction(EventHandler<ActionEvent> eventHandler) {
+        closeButton.setOnAction(eventHandler);
+        }
 
     class DVFooter extends HBox {
+
+
         // private Button ediButton;
         DVFooter(Recipe recipe) {
             setPrefSize(500, 60);
@@ -98,13 +139,15 @@ public class DetailedView extends Stage {
              * recipeAsText.setEditable(false);
              * });
              */
-            Button closeButton = new Button("Save and Close Detailed View");
+            closeButton = new Button("Save and Close Detailed View");
+            /* 
             closeButton.setOnAction(e -> {
                 recipeAsText.setEditable(false);
                 recipe.setRecipeTotal(recipeAsText.getText());
-
-                close();
+                stage.close();
             });// add method to delete the recipe as a whole
+            */
+
             closeButton.setStyle("-fx-font-weight: bold; -fx-font-size: 20");
 
             // getChildren().addAll(saveButton);
