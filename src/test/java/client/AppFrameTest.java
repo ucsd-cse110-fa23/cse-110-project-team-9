@@ -9,5 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AppFrameTest {
-    
+    @Test
+    void labelTest(){
+        String a = "apple";
+        String b = "apple";
+        assertEquals(a,b);
+    }
 }
