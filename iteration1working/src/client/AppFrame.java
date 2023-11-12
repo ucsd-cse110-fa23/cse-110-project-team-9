@@ -256,9 +256,17 @@ public class AppFrame extends Stage {
                 });
         t.start();
     }
+<<<<<<< Updated upstream
     public Label getRecordingLable(){
         return recordingLabel;
     }
+=======
+
+    //public Label getRecordingLable() {
+    //    return recordingLabel;
+  //  }
+
+>>>>>>> Stashed changes
     private void stopRecording() {
         targetDataLine.stop();
         targetDataLine.close();
