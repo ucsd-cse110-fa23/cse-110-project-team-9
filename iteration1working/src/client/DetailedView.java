@@ -58,7 +58,7 @@ public class DetailedView extends Stage {
     class DVHeader extends BorderPane {
         DVHeader() {
             setPrefSize(500, 60);
-            setStyle("-fx-background-color: #e8e113;");
+            setStyle("-fx-background-color: #659DBD;");
 
             Text titleText = new Text("Detailed View");
             titleText.setStyle("-fx-font-weight: bold; -fx-font-size: 20; -fx-background-color: Orange");
@@ -70,7 +70,7 @@ public class DetailedView extends Stage {
         // private Button ediButton;
         DVFooter(Recipe recipe) {
             setPrefSize(500, 60);
-            setStyle("-fx-background-color: #F0F8FF;");
+            setStyle("-fx-background-color: #659DBD;");
             setSpacing(15);
             /*
              * Button saveButton = new Button("Save Recipe");//is back button save?

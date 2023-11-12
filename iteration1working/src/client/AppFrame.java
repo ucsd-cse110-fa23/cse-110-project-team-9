@@ -298,11 +298,11 @@ public class AppFrame extends Stage {
 
         Footer() {
             this.setPrefSize(500, 60);
-            this.setStyle("-fx-background-color: #F0F8FF;");
+            this.setStyle("-fx-background-color: #553D67;");
             this.setSpacing(15);
 
             // set a default style for buttons - background color, font size, italics
-            String defaultButtonStyle = "-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial;";
+            String defaultButtonStyle = "-fx-font-style: italic; -fx-background-color: #F64C72;  -fx-font-weight: bold; -fx-font: 16 arial;";
 
             addButton = new Button("Create a Recipe"); // text displayed on add button
             addButton.setStyle(defaultButtonStyle); // styling the button
@@ -324,10 +324,10 @@ public class AppFrame extends Stage {
 
         Header() {
             this.setPrefSize(500, 60); // Size of the header
-            this.setStyle("-fx-background-color: #F0F8FF;");
+            this.setStyle("-fx-background-color: #553D67;");
 
             Text titleText = new Text("PantryPal"); // Text of the Header
-            titleText.setStyle("-fx-font-weight: bold; -fx-font-size: 20;");
+            titleText.setStyle("-fx-font-weight: bold; -fx-font-size: 20");
             this.getChildren().add(titleText);
             this.setAlignment(Pos.CENTER); // Align the text to the Center
         }
@@ -338,7 +338,7 @@ public class AppFrame extends Stage {
         RecipeList() {
             this.setSpacing(3); // sets spacing between recipes
             this.setPrefSize(500, 560);
-            this.setStyle("-fx-background-color: #F0F8FF;");
+            this.setStyle("-fx-background-color: #242582;");
         }
 
         public void deleteRecipe(Recipe recipe) {

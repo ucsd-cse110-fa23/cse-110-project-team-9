@@ -273,7 +273,7 @@ class Recipe extends HBox {
         this.getChildren().add(deleteButton);
 
         detailedView = new Button("Detailed View");
-        detailedView.setStyle(defaultButtonStyle);
+        detailedView.setStyle("-fx-background-color: #F64C72; -fx-border-width: 0; -fx-border-color: #8B0000; -fx-font-weight: bold");
         // detailedView.setAlignment(Pos.RIGHT);
 
         recipeLabel = new Label("Recipe: "); // create task name text field
