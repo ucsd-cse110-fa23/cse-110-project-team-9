@@ -189,7 +189,7 @@ public class AppFrameTest {
        
     }
 
-*/
+
 
     @Test
     void invalidChatGptinputTest(){
@@ -207,14 +207,21 @@ public class AppFrameTest {
         } 
         
     }
-    /* 
+     
     @Test
     void WhisperTest(){
-        String[] s= {"apples", "banana", "watermelon"};
-        //Whisper a= new Whisper();
-        String Whisperinput="apple";
+        String audioText = "breakfast";
+        String[] args = new String[] { "WhisperTest.wav" };
         
-
+        try {
+            Whisper.main(args);
+            String result = Whisper.getResult();
+            assertEquals(audioText, result);
+        } catch (URISyntaxException f) {
+            f.printStackTrace();
+        } catch (IOException f) {
+            f.printStackTrace();
+        }
     }
-    */
+*/
 }
