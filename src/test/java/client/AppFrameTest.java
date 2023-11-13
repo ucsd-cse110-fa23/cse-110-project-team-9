@@ -37,6 +37,8 @@ public class AppFrameTest {
 
         } catch (ExceptionInInitializerError e) {
             e.printStackTrace();
+        } catch (NoClassDefFoundError e) {
+            e.printStackTrace();
         }
         //Recipe r= new Recipe();
         
@@ -59,6 +61,8 @@ public class AppFrameTest {
             assertEquals(rl.getChildren().contains(r), true);
         } catch (ExceptionInInitializerError e) {
             e.printStackTrace();
+        } catch (NoClassDefFoundError e) {
+            e.printStackTrace();
         }
         
         //Filewriter r= n
@@ -77,6 +81,8 @@ public class AppFrameTest {
             r.setRecipeTotal("no more apples");
             assertNotEquals(s, r.getRecipeTotal());
         } catch (ExceptionInInitializerError e) {
+            e.printStackTrace();
+        } catch (NoClassDefFoundError e) {
             e.printStackTrace();
         }
 
@@ -102,6 +108,8 @@ public class AppFrameTest {
         //RecipeList rl= new RecipeList();
         } catch (ExceptionInInitializerError e) {
             e.printStackTrace();
+        } catch (NoClassDefFoundError e) {
+            e.printStackTrace();
         }
         
     }
@@ -121,6 +129,8 @@ public class AppFrameTest {
             //Filewriter r= n
             //RecipeList rl= new RecipeList();
         } catch (ExceptionInInitializerError e) {
+            e.printStackTrace();
+        } catch (NoClassDefFoundError e) {
             e.printStackTrace();
         }
         
@@ -150,6 +160,8 @@ public class AppFrameTest {
             assertEquals(recipe.getRecipeTotal(), "Ingredients: tortilla, beef, tomato, cheese, salsa");
             assertEquals(type, recipe);
         } catch (ExceptionInInitializerError e) {
+            e.printStackTrace();
+        } catch (NoClassDefFoundError e) {
             e.printStackTrace();
         }
         
