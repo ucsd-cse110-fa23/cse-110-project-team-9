@@ -258,12 +258,13 @@ class Recipe extends HBox {
 
     private DetailedView currDetailedView;
 
-    String defaultButtonStyle = "-fx-border-color: #000000; -fx-font: 12 arial; -fx-pref-height: 30px;";
-    String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-height: 30px; -fx-text-fill: black;";
+    //String defaultButtonStyle = "-fx-border-color: #000000; -fx-font: 12 arial; -fx-pref-height: 30px;";
+    String defaultLabelStyle = "-fx-pref-height: 30px; -fx-text-fill: black;";
 
     Recipe() {
         this.setPrefSize(600, 30); // sets size of recipe
-        this.setStyle("-fx-background-color: #F0F8FF; -fx-border-width: 0;");
+        this.setStyle("-fx-background-color: #F0F8FF; -fx-border-width: 1; -fx-border-color: #8EC3B0");
+        this.setSpacing(5);
 
         deleteButton = new Button("X");
 
@@ -272,22 +273,22 @@ class Recipe extends HBox {
         deleteButton.setStyle(
                 "-fx-background-color: #FFA9A9; -fx-border-width: 0; -fx-border-color: #8B0000; -fx-font-weight: bold");
         this.getChildren().add(deleteButton);
+        
 
         detailedView = new Button("Detailed View");
         detailedView.setStyle(
-                "-fx-background-color: #F64C72; -fx-border-width: 0; -fx-border-color: #8B0000; -fx-font-weight: bold");
-        // detailedView.setAlignment(Pos.RIGHT);
+                "-fx-background-color: #BCEAD5; -fx-border-width: 1; -fx-border-color: #BCEAD5; -fx-font-weight: bold");
 
         recipeLabel = new Label("Recipe: "); // create task name text field
         recipeLabel.setStyle(defaultLabelStyle);
         recipeLabel.setTextAlignment(TextAlignment.CENTER);
 
-        recipeType = new Label();
-        recipeType.setStyle(defaultLabelStyle);
+        recipeType = new Label("Recipe Type: NONE");
+        recipeType.setStyle("-fx-background-color: #BCEAD5; -fx-border-width: 1; -fx-border-color: #BCEAD5; -fx-font-weight: bold; -fx-pref-height: 30px");
         recipeType.setTextAlignment(TextAlignment.CENTER);
-        recipeType.setVisible(false);
+        //recipeType.setVisible(false);
 
-        this.getChildren().addAll(recipeType, recipeLabel, detailedView);
+        this.getChildren().addAll(detailedView);
 
         showDetailedView();
         // recipeTotal = currDetailedView.saveNewRecipe();
@@ -308,12 +309,32 @@ class Recipe extends HBox {
     }
 
     public void setRecipeName(String newRecipe) {// set title of recipe
-        recipeLabel.setText(newRecipe);
+        if(newRecipe.length() > 0 && newRecipe.length() < 150) {
+             recipeLabel.setText(newRecipe);
+        } else if (newRecipe.length() >= 150) {
+            recipeLabel.setText(newRecipe.substring(0, 151));
+        } else {
+            return;
+        }
+        this.getChildren().add(1, recipeLabel);
     }
 
     public void setRecipeType(String type) {
-        recipeType.setText(type);
+        
+        //Run this line only if trying to test meal type tag without microphone working (Meal type registers anything other than breakfast, lunch, dinner)
+        //recipeType.setText(type);
+
+        if(type.toLowerCase().contains("breakfast")) {
+            recipeType.setText("Breakfast");
+        } else if (type.toLowerCase().contains("lunch")) {
+            recipeType.setText("Lunch");
+        } else if (type.toLowerCase().contains("dinner")) {
+            recipeType.setText("Dinner"); 
+        } else {
+            return;
+        }
         recipeType.setVisible(true);
+        this.getChildren().add(1, recipeType);
     }
 
     public void setRecipeTotal(String recipe) {

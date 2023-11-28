@@ -79,6 +79,8 @@ public class AppFrame extends Stage {
 
     private void openPopup() {
 
+        String defaultButtonStyle = "-fx-background-color: #BCEAD5; -fx-font-weight: bold";
+
         Recipe recipe = new Recipe();
 
         // currRecipeText = "Current Recipe: ";
@@ -101,12 +103,14 @@ public class AppFrame extends Stage {
         recordingLabel2.setVisible(false);
 
         Button recTypeStart = new Button("Start Recording Meal Type (Breakfast, Lunch, Dinner)");
+        recTypeStart.setStyle(defaultButtonStyle);
         recTypeStart.setOnAction(e -> {
             startRecording();
             recordingLabel1.setVisible(true);
         });
 
         Button recTypeStop = new Button("Stop Recording Meal Type");
+        recTypeStop.setStyle(defaultButtonStyle);
         recTypeStop.setOnAction(e -> {
             recordingLabel1.setVisible(false);
             stopRecording();
@@ -118,11 +122,14 @@ public class AppFrame extends Stage {
         });
 
         Button startRecording = new Button("Start Recording Ingredients");
+        startRecording.setStyle(defaultButtonStyle);
         startRecording.setOnAction(e -> {
             startRecording();
             recordingLabel2.setVisible(true);
         });
+
         Button stopRecording = new Button("Stop Recording Ingredients");
+        stopRecording.setStyle(defaultButtonStyle);
         stopRecording.setOnAction(e -> {
             recordingLabel2.setVisible(false);
             stopRecording();
@@ -137,6 +144,7 @@ public class AppFrame extends Stage {
         });
 
         Button closeButton = new Button("Cancel Recipe");
+        closeButton.setStyle(defaultButtonStyle);
         closeButton.setOnAction(e -> popupStage.close());
 
         recipe.getDeleteButton().setOnAction(e -> {
@@ -144,6 +152,7 @@ public class AppFrame extends Stage {
         });
 
         Button saveRecipe = new Button("Save Recipe");
+        saveRecipe.setStyle(defaultButtonStyle);
         saveRecipe.setOnAction(e -> {
             recipe.setRecipeName(ChatGPT.returnPrompt());
             recipe.setRecipeTotal(currRecipeText);
@@ -154,6 +163,7 @@ public class AppFrame extends Stage {
         });
 
         Button refreshButton = new Button("Regenerate Recipe");
+        refreshButton.setStyle(defaultButtonStyle);
         refreshButton.setOnAction(e -> {
             ingredientsToRecipe();
             currRecipeText = ChatGPT.getResult();
@@ -177,29 +187,46 @@ public class AppFrame extends Stage {
         recordingBox.setAlignment(Pos.CENTER);
 
         VBox topBox = new VBox();
+        topBox.setStyle("-fx-background-color: #8EC3B0");
         topBox.getChildren().addAll(typeBox, recordingBox);
-        topBox.setSpacing(10);
+        topBox.setSpacing(5);
+        topBox.setPadding(new Insets(5, 0, 5, 0));
 
         popupLayout.setTop(topBox);
 
         VBox middleBox = new VBox();
+        middleBox.setStyle("-fx-background-color: #DEF5E5");
+
+        /* 
+        Label recipeTypeLabel = new Label("Recipe Type: ");
+        recipeTypeLabel.setStyle("-fx-font-weight: bold");
+
+        Label recipePreviewLabel = new Label("Recipe Preview: ");
+        recipePreviewLabel.setStyle("-fx-font-weight: bold");
+        */
 
         String typeLabel = "Recipe Type: " + currRecipeType;
         String recipeLabel = "Recipe Preview: " + currRecipeText;
         recipeType.setText(typeLabel);
         recipeText.setText(recipeLabel);
+
+        /* 
+        ScrollPane scroll = new ScrollPane(recipeText);
+        scroll.setFitToWidth(true);
+        scroll.setFitToHeight(true);
+        */
+
         middleBox.getChildren().addAll(recipeType, recipeText);
         middleBox.setSpacing(5);
-
-        ScrollPane scroller = new ScrollPane(middleBox);
-        scroller.setFitToWidth(true);
-        scroller.setFitToHeight(true);
-        popupLayout.setCenter(scroller);
+        middleBox.setPadding(new Insets(5, 2, 5, 2));
+        popupLayout.setCenter(middleBox);
 
         HBox bottomBox = new HBox();
+        bottomBox.setStyle("-fx-background-color: #8EC3B0");
         bottomBox.getChildren().addAll(refreshButton, closeButton, saveRecipe);
         bottomBox.setAlignment(Pos.CENTER);
         bottomBox.setSpacing(5);
+        bottomBox.setPadding(new Insets(5, 0, 5, 0));
         popupLayout.setBottom(bottomBox);
 
         popupStage.showAndWait();
@@ -307,12 +334,12 @@ public class AppFrame extends Stage {
         private Button addButton;
 
         Footer() {
-            this.setPrefSize(500, 60);
-            this.setStyle("-fx-background-color: #553D67;");
+            this.setPrefSize(500, 40);
+            this.setStyle("-fx-background-color: #8EC3B0");
             this.setSpacing(15);
 
             // set a default style for buttons - background color, font size, italics
-            String defaultButtonStyle = "-fx-font-style: italic; -fx-background-color: #F64C72;  -fx-font-weight: bold; -fx-font: 16 arial;";
+            String defaultButtonStyle = "-fx-background-color: #BCEAD5; -fx-font-weight: bold";
 
             addButton = new Button("Create a Recipe"); // text displayed on add button
             addButton.setStyle(defaultButtonStyle); // styling the button
@@ -334,7 +361,7 @@ public class AppFrame extends Stage {
 
         Header() {
             this.setPrefSize(500, 60); // Size of the header
-            this.setStyle("-fx-background-color: #553D67;");
+            this.setStyle("-fx-background-color: #8EC3B0");
 
             Text titleText = new Text("PantryPal"); // Text of the Header
             titleText.setStyle("-fx-font-weight: bold; -fx-font-size: 20");
@@ -348,7 +375,7 @@ public class AppFrame extends Stage {
         RecipeList() {
             this.setSpacing(3); // sets spacing between recipes
             this.setPrefSize(500, 560);
-            this.setStyle("-fx-background-color: #242582;");
+            this.setStyle("-fx-background-color: #DEF5E5;");
         }
 
         public void deleteRecipe(Recipe recipe) {
