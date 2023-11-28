@@ -253,6 +253,7 @@ class Recipe extends HBox {
     private Button deleteButton;
     private Button detailedView;
     private Label recipeLabel;
+    private Label recipeType;
     private String recipeTotal;
 
     private DetailedView currDetailedView;
@@ -273,14 +274,20 @@ class Recipe extends HBox {
         this.getChildren().add(deleteButton);
 
         detailedView = new Button("Detailed View");
-        detailedView.setStyle("-fx-background-color: #F64C72; -fx-border-width: 0; -fx-border-color: #8B0000; -fx-font-weight: bold");
+        detailedView.setStyle(
+                "-fx-background-color: #F64C72; -fx-border-width: 0; -fx-border-color: #8B0000; -fx-font-weight: bold");
         // detailedView.setAlignment(Pos.RIGHT);
 
         recipeLabel = new Label("Recipe: "); // create task name text field
         recipeLabel.setStyle(defaultLabelStyle);
         recipeLabel.setTextAlignment(TextAlignment.CENTER);
 
-        this.getChildren().addAll(recipeLabel, detailedView);
+        recipeType = new Label();
+        recipeType.setStyle(defaultLabelStyle);
+        recipeType.setTextAlignment(TextAlignment.CENTER);
+        recipeType.setVisible(false);
+
+        this.getChildren().addAll(recipeType, recipeLabel, detailedView);
 
         showDetailedView();
         // recipeTotal = currDetailedView.saveNewRecipe();
@@ -302,6 +309,11 @@ class Recipe extends HBox {
 
     public void setRecipeName(String newRecipe) {// set title of recipe
         recipeLabel.setText(newRecipe);
+    }
+
+    public void setRecipeType(String type) {
+        recipeType.setText(type);
+        recipeType.setVisible(true);
     }
 
     public void setRecipeTotal(String recipe) {

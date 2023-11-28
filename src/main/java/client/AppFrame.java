@@ -147,6 +147,7 @@ public class AppFrame extends Stage {
         saveRecipe.setOnAction(e -> {
             recipe.setRecipeName(ChatGPT.returnPrompt());
             recipe.setRecipeTotal(currRecipeText);
+            recipe.setRecipeType(currRecipeType);
             recipeList.getChildren().add(recipe);
             popupStage.close();
 
