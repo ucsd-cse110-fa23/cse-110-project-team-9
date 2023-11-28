@@ -128,7 +128,7 @@ public class AppFrame extends Stage {
             stopRecording();
             audioToText();
             ingredientsToRecipe();
-            currRecipeText = ChatGPT.getResult(); 
+            currRecipeText = ChatGPT.getResult();
             String recipeLabel = "Recipe Preview: " + currRecipeText;
             recipeText.setText(recipeLabel);
             recipeText.setVisible(true);
@@ -150,6 +150,15 @@ public class AppFrame extends Stage {
             recipeList.getChildren().add(recipe);
             popupStage.close();
 
+        });
+
+        Button refreshButton = new Button("Regenerate Recipe");
+        refreshButton.setOnAction(e -> {
+            ingredientsToRecipe();
+            currRecipeText = ChatGPT.getResult();
+            String recipeLabel = "Recipe Preview: " + currRecipeText;
+            recipeText.setText(recipeLabel);
+            recipeText.setVisible(true);
         });
 
         BorderPane popupLayout = new BorderPane();
@@ -187,7 +196,7 @@ public class AppFrame extends Stage {
         popupLayout.setCenter(scroller);
 
         HBox bottomBox = new HBox();
-        bottomBox.getChildren().addAll(closeButton, saveRecipe);
+        bottomBox.getChildren().addAll(refreshButton, closeButton, saveRecipe);
         bottomBox.setAlignment(Pos.CENTER);
         bottomBox.setSpacing(5);
         popupLayout.setBottom(bottomBox);
