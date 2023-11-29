@@ -187,6 +187,26 @@ public class AppFrameTest {
         }
     }
 
+    @Test
+    //This BDD tests for when there is no meal type tag
+    void MealTypeTagBDD2(){
+        try{
+            Recipe r = new Recipe();
+            AppFrame af = new AppFrame();
+            RecipeList rl = af.new RecipeList();
+            MockChatGPT mcg = new MockChatGPT();
+            mcg.setResult("", "bagels and creamcheese");
+            r.setRecipeTotal(mcg.getResultRecipe());
+            r.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r);
+            assertNotEquals(r.getRecipeType().toString(), "breakfast");
+        }catch (ExceptionInInitializerError e) {
+            e.printStackTrace();
+        } catch (NoClassDefFoundError e) {
+            e.printStackTrace();
+        }
+    }
+
      
     @Test
     //This BDD tests for when a user saves a refreshed recipe
@@ -218,6 +238,42 @@ public class AppFrameTest {
         }
     }
     
+
+    @Test
+    //This BDD tests for when a user cancels a refreshed recipe
+    void RefreshBDD4(){
+        try{
+            Recipe r = new Recipe();
+            AppFrame af = new AppFrame();
+            RecipeList rl = af.new RecipeList();
+            MockChatGPT mcg = new MockChatGPT();
+            MockWhisper mv= new MockWhisper();
+            String refresh="refresh";
+            String cancel="cancel";
+            mcg.setResult("breakfast", "bagels and creamcheese");
+            r.setRecipeTotal(mcg.getResultRecipe());
+            r.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r);
+            String newrecipe="";
+            if(refresh== "refresh"){
+                mcg.setResult("breakfast", "bagels and creamcheese");
+                newrecipe=mcg.getResultRecipe();
+                r.setRecipeTotal(mcg.getResultRecipe());
+                r.setRecipeType(mcg.getMealType());
+            }
+           assertEquals(mcg.getResultRecipe(), newrecipe);
+
+           if(cancel=="cancel"){
+             rl.deleteRecipe(r);
+            }
+            assertEquals(rl.getChildren().contains(r), false);
+
+        }catch (ExceptionInInitializerError e) {
+            e.printStackTrace();
+        } catch (NoClassDefFoundError e) {
+            e.printStackTrace();
+        }
+    }
     
 /* 
     @Test
