@@ -162,6 +162,7 @@ public class AppFrame extends Stage {
 
         });
 
+
         Button refreshButton = new Button("Regenerate Recipe");
         refreshButton.setStyle(defaultButtonStyle);
         refreshButton.setOnAction(e -> {

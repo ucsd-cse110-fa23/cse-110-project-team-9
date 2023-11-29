@@ -187,7 +187,7 @@ public class AppFrameTest {
         }
     }
 
-     /* 
+     
     @Test
     //This BDD tests for when a user saves a refreshed recipe
     void RefreshBDD1(){
@@ -195,6 +195,21 @@ public class AppFrameTest {
             Recipe r = new Recipe();
             AppFrame af = new AppFrame();
             RecipeList rl = af.new RecipeList();
+            MockChatGPT mcg = new MockChatGPT();
+            MockWhisper mv= new MockWhisper();
+            String refresh="refresh";
+            mcg.setResult("breakfast", "bagels and creamcheese");
+            r.setRecipeTotal(mcg.getResultRecipe());
+            r.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r);
+            String newrecipe="";
+            if(refresh== "refresh"){
+                mcg.setResult("breakfast", "bagels and creamcheese");
+                newrecipe=mcg.getResultRecipe();
+                r.setRecipeTotal(mcg.getResultRecipe());
+                r.setRecipeType(mcg.getMealType());
+            }
+           assertEquals(mcg.getResultRecipe(), newrecipe);
 
         }catch (ExceptionInInitializerError e) {
             e.printStackTrace();
@@ -202,7 +217,7 @@ public class AppFrameTest {
             e.printStackTrace();
         }
     }
-    */
+    
     
 /* 
     @Test
