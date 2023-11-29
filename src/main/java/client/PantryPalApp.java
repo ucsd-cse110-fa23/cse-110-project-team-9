@@ -167,6 +167,15 @@ class Whisper {
 
 }
 
+class MockWhisper extends Whisper{
+    private static String result1;
+    private static String result2;
+    public static void main(String[] args) throws IOException, URISyntaxException {
+        result1 = "Ingrediants";
+        result2 = "Meal Type";
+    }
+}
+
 class ChatGPT {
     private static final String API_ENDPOINT = "https://api.openai.com/v1/completions";
     private static final String API_KEY = "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";
@@ -231,6 +240,7 @@ class ChatGPT {
 
     }
 
+
     public static String returnPrompt() {
         String title = "";
         String delimiter = "Ingredients"; // Use "\n" as the delimiter
@@ -247,6 +257,35 @@ class ChatGPT {
     }
 
 }
+
+class MockChatGPT extends ChatGPT{
+        private static String resultRecipe;
+        private static String resultMealType;
+
+        public void setResult(String mealType, String ingrediants){
+            if (mealType == "breakfast"){
+                resultRecipe = "A breakfast recipe with " + ingrediants;
+            }
+            else if (mealType == "lunch"){
+                resultRecipe = "A lunch recipe with " + ingrediants;
+            }
+            else if (mealType == "dinner"){
+                resultRecipe = "A dinner recipe with " + ingrediants;
+            }
+            else{
+                resultRecipe = "random recipe with " + ingrediants;
+            }
+            resultMealType = mealType;
+        }
+
+        public String getResultRecipe() {
+            return resultRecipe;
+        }
+
+        public String getMealType(){
+            return resultMealType;
+        }
+    }
 
 class Recipe extends HBox {
 
@@ -335,6 +374,10 @@ class Recipe extends HBox {
         }
         recipeType.setVisible(true);
         this.getChildren().add(1, recipeType);
+    }
+
+    public Label getRecipeType(){
+        return recipeType;
     }
 
     public void setRecipeTotal(String recipe) {
