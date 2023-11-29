@@ -166,6 +166,44 @@ public class AppFrameTest {
         }
         
     }
+
+    @Test
+    //This BDD tests for when there is a meal type tag
+    void MealTypeTagBDD1(){
+        try{
+            Recipe r = new Recipe();
+            AppFrame af = new AppFrame();
+            RecipeList rl = af.new RecipeList();
+            MockChatGPT mcg = new MockChatGPT();
+            mcg.setResult("breakfast", "bagels and creamcheese");
+            r.setRecipeTotal(mcg.getResultRecipe());
+            r.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r);
+            assertEquals(r.getRecipeType().toString(), "breakfast");
+        }catch (ExceptionInInitializerError e) {
+            e.printStackTrace();
+        } catch (NoClassDefFoundError e) {
+            e.printStackTrace();
+        }
+    }
+
+     /* 
+    @Test
+    //This BDD tests for when a user saves a refreshed recipe
+    void RefreshBDD1(){
+        try{
+            Recipe r = new Recipe();
+            AppFrame af = new AppFrame();
+            RecipeList rl = af.new RecipeList();
+
+        }catch (ExceptionInInitializerError e) {
+            e.printStackTrace();
+        } catch (NoClassDefFoundError e) {
+            e.printStackTrace();
+        }
+    }
+    */
+    
 /* 
     @Test
     void detailViewTest(){
