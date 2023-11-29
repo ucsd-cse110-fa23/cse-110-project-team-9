@@ -15,8 +15,10 @@ import com.mongodb.ServerApi;
 import com.mongodb.ServerApiVersion;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 public class RequestHandler implements HttpHandler {
 
@@ -60,24 +62,33 @@ public class RequestHandler implements HttpHandler {
         InputStream inStream = httpExchange.getRequestBody();
         Scanner scanner = new Scanner(inStream);
         String postData = scanner.nextLine();
-        String name = postData.substring(0,postData.indexOf("~"));
-        String type = postData.substring(postData.indexOf("~"), postData.indexOf("#"));
-        String details = postData.substring(postData.indexOf("#") + 1);
+        String name = postData.substring(0,postData.indexOf("!"));
+        String type = postData.substring(postData.indexOf("!") + 1, postData.indexOf("="));
+        String details = postData.substring(postData.indexOf("=") + 1);
+
+        MongoCollection<Document> recipesCollection;
+        MongoDatabase recipe_db;
 
         // Store data in hashmap
         String[] typeAndDetails = new String[]{type, details};
-        data.put(name, typeAndDetails);
+        //data.put(name, typeAndDetails);
 
         String uri = "mongodb+srv://admin:123@cluster0.cp02bnz.mongodb.net/?retryWrites=true&w=majority";
         try (MongoClient mongoClient = MongoClients.create(uri)) {
 
-            //recipe_db = mongoClient.getDatabase("recipe_db");
-            //recipesCollection = recipe_db.getCollection("recipes"); 
+            recipe_db = mongoClient.getDatabase("recipe_db");
+            recipesCollection = recipe_db.getCollection("recipes"); 
         
+            Document recipe = new Document("_id", new ObjectId());
+            recipe.append("name", name)
+                   .append("type", type)
+                   .append("details", details);
+
+            recipesCollection.insertOne(recipe);
         }
 
-        String response = "Posted entry {" + name + ", " + type + "}";
-        System.out.println(response + data.toString());
+        String response = "Posted entry {" + name + ", " + type +  "}";
+        //System.out.println(response + data.toString());
         scanner.close();
 
         return response;

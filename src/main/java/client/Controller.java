@@ -6,8 +6,6 @@ import javafx.event.ActionEvent;
 public class Controller {
     private static View view;
     private static Model model;
-    private RecipeList recipeList;
-    private Recipe recipe;
 
     public Controller(View view, Model model) {
         this.view = view;
@@ -17,16 +15,14 @@ public class Controller {
     }
 
     private void handlePostButton(ActionEvent event) {
-        String name = view.getRecipeName();
-        String[] typeAndRecipe = new String[]{view.getRecipeType(), view.getRecipeText()};
-        String response = model.performRequest("POST", name, typeAndRecipe, null);
+        Recipe curr = view.getRecipe();
+        curr.setRecipeName(view.getRecipeName());
+        curr.setRecipeType(view.getRecipeType());
+        String[] typeAndRecipe = new String[]{curr.getRecipeType(), curr.getRecipeTotal()};
+        String response = model.performRequest("POST", curr.getRecipeLabelName(), typeAndRecipe, null);
         //pinging to server
-        Recipe curr = new Recipe();
-        curr.setRecipeName(name);
-        curr.setRecipeType(typeAndRecipe[0]);
-        curr.setRecipeTotal(typeAndRecipe[1]);
-        System.out.println("posting name: " + curr.getRecipeLabelName() + "total: " + curr.getRecipeTotal());
+        System.out.print("posting name: " + curr.getRecipeLabelName() + "total: " + curr.getRecipeTotal() + "TYPE AND RECIPE: " + typeAndRecipe[0] + typeAndRecipe[1]);
         view.getRecipeList().getChildren().add(curr);
-        view.showAlert("Response", response);
+        //view.showAlert("Response", response);
     }
 }

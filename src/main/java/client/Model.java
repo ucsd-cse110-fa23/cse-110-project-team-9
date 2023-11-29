@@ -69,7 +69,8 @@ public class Model {
 
             if (method.equals("POST") || method.equals("PUT")) {
                 OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-                out.write(name + "~" + typeAndDetails[0] + "#" + typeAndDetails[1]);
+                out.write("temporary name" + "!" + typeAndDetails[0] + "=" + typeAndDetails[1]);
+                System.out.print("temporary name" + "!" + typeAndDetails[0] + "=" + typeAndDetails[1]);
                 out.flush();
                 out.close();
             }
