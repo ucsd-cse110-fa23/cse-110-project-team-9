@@ -62,14 +62,14 @@ public class Model {
             if (query != null) {
                 urlString += "?=" + query;
             }
-            URL url = new URI(urlString).toURL();
+            URL url = new URI(urlString).toURL(); //error here bcuz of not refactoring query - fix at recipe controller 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod(method);
             conn.setDoOutput(true);
 
             if (method.equals("POST") || method.equals("PUT")) {
                 OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-                out.write("temporary name" + "!" + typeAndDetails[0] + "=" + typeAndDetails[1]);
+                out.write(name + "!" + typeAndDetails[0] + "=" + typeAndDetails[1]);
                 //System.out.print("temporary name" + "!" + typeAndDetails[0] + "=" + typeAndDetails[1]);
                 out.flush();
                 out.close();
@@ -376,6 +376,16 @@ class Recipe extends HBox {
 
     public String getRecipeLabelName() {
         return recipeLabel.getText();
+    }
+    // this will fix the query error for delete
+    public String getQueryRecipeLabelName(){
+        String formattedName;
+        String base = recipeLabel.getText();
+
+        formattedName = base.replace(' ', '-');
+
+        return formattedName;
+
     }
 
     public String getRecipeType() {

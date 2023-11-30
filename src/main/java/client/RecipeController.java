@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 public class RecipeController {
     private static Model model;
     private Recipe recipe;
+    private static View view;
 
     public RecipeController(Recipe recipe, Model model) {
         this.recipe = recipe;
@@ -18,13 +19,23 @@ public class RecipeController {
     }
 
     public void handleDeleteButton(ActionEvent event) {
-        System.out.println("delete: " + recipe.getRecipeLabelName());
-        String response = model.performRequest("DELETE", null, null, recipe.getRecipeLabelName());
-        
+
+        Recipe curr = this.recipe;
+
+        //String[] typeAndRecipe = new String[]{
+        //    curr.getRecipeType(), curr.getRecipeTotal()
+       // };
+        //System.out.println("delete: " + recipe.getRecipeLabelName());
+        String response = model.performRequest("DELETE", null, null, recipe.getQueryRecipeLabelName());
+        curr.getID();
+
+        System.out.println("delete: " + response);
+
+       // view.getRecipeList().deleteRecipe(curr);
     }
 
     private void handleGetButton(ActionEvent event) {
-        //System.out.println("Get: " + recipe.getRecipeLabelName());
+        Recipe curr = this.recipe;
         
         System.out.print("ID: " + recipe.getID());
         String response = model.performRequest("GET", null, null, recipe.getID());

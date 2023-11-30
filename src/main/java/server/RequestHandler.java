@@ -21,6 +21,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Projections;
+import com.mongodb.client.result.DeleteResult;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -122,23 +123,26 @@ public class RequestHandler implements HttpHandler {
     }
 
     private String handleDelete(HttpExchange httpExchange) throws IOException {
-        /*
-         * URI uri = httpExchange.getRequestURI();
-         * String query = uri.getRawQuery();
-         * if (query != null) {
-         * String value = query.substring(query.indexOf("=") + 1);
-         * String year = data.get(value); // Retrieve data from hashmap
-         * if (year != null) {
-         * data.remove(value);
-         * response = "Deleted Entry {" + value + "," + year + "}";
-         * System.out.println("Queried for " + value + " and found " + year);
-         * } else {
-         * response = "No data found for " + value;
-         * }
-         * }
-         */
-        String response = "Invalid GET request";
+        String response = "";
+       // InputStream inStream = httpExchange.getRequestBody();
+       // Scanner scanner = new Scanner(inStream);
+        //String postData = scanner.nextLine();
+       // String name = postData;
+       // System.out.println(result);
+        
+        URI uri = httpExchange.getRequestURI();
 
+        String query = uri.getRawQuery();
+        if (query != null) {
+            String value = query.substring(query.indexOf("=") + 1);
+            value = value.replace("-", " ");
+        
+         
+        Bson filter = eq("name", value);
+        DeleteResult result = recipesCollection.deleteOne(filter);
+        response = "deleted" + filter.toString();
+        System.out.println(result);
+        }
         return response;
     }
 
