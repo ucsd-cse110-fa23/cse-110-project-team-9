@@ -20,8 +20,9 @@ public class Controller {
         curr.setRecipeType(view.getRecipeType());
         String[] typeAndRecipe = new String[]{curr.getRecipeType(), curr.getRecipeTotal()};
         String response = model.performRequest("POST", curr.getRecipeLabelName(), typeAndRecipe, null);
+        curr.setID(response);
         //pinging to server
-        System.out.print("posting name: " + curr.getRecipeLabelName() + "total: " + curr.getRecipeTotal() + "TYPE AND RECIPE: " + typeAndRecipe[0] + typeAndRecipe[1]);
+        System.out.print("POST RESPONSE: " + response);
         view.getRecipeList().getChildren().add(curr);
         //view.showAlert("Response", response);
     }

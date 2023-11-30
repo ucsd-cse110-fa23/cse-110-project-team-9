@@ -1,5 +1,7 @@
 package client;
 
+import org.bson.json.JsonObject;
+
 import client.View.RecipeList;
 import javafx.event.ActionEvent;
 
@@ -22,8 +24,21 @@ public class RecipeController {
     }
 
     private void handleGetButton(ActionEvent event) {
-        System.out.println("Get: " + recipe.getRecipeLabelName());
+        //System.out.println("Get: " + recipe.getRecipeLabelName());
+        
+        System.out.print("ID: " + recipe.getID());
+        String response = model.performRequest("GET", null, null, recipe.getID());
+        System.out.print("GET RESPONSE: " + response);
+/* 
+        String name = response.substring(0,response.indexOf("!"));
+        String type = response.substring(response.indexOf("!") + 1, response.indexOf("="));
+        String details = response.substring(response.indexOf("=") + 1);
+
+
+        recipe.setRecipeName(name);
+        recipe.setRecipeTotal(details);
+        recipe.setRecipeType(type);
         recipe.getDetailedView().getStage().show();
-        String response = model.performRequest("GET", null, null, recipe.getRecipeLabelName());
+        */
     }
 }

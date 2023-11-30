@@ -166,8 +166,8 @@ public class View{
             ingredientsToRecipe();
             currRecipe.setRecipeTotal(ChatGPT.getResult()); 
             currRecipe.setRecipeName(ChatGPT.returnPrompt());
-            String recipeLabel = "Recipe Preview: " + currRecipe.getRecipeLabelName();
-            recipeText.setText(recipeLabel);
+            //String recipeLabel = "Recipe Preview: " + currRecipe.getRecipeLabelName();
+            recipeText.setText(currRecipe.getRecipeTotal());
             recipeText.setVisible(true);
         });
 

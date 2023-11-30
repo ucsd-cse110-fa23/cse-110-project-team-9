@@ -5,8 +5,11 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Projections.*;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -17,15 +20,27 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Projections;
+
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 public class RequestHandler implements HttpHandler {
 
     private final Map<String, String[]> data;
+    MongoCollection<Document> recipesCollection;
+    MongoDatabase recipe_db;
+    String uri;
+    MongoClient mongoClient;
 
     public RequestHandler(Map<String, String[]> data) {
         this.data = data;
+        uri = "mongodb+srv://admin:123@cluster0.cp02bnz.mongodb.net/?retryWrites=true&w=majority";
+        MongoClient mongoClient = MongoClients.create(uri);
+        recipe_db = mongoClient.getDatabase("recipe_db");
+        recipesCollection = recipe_db.getCollection("recipes");
+
     }
 
     public void handle(HttpExchange httpExchange) throws IOException {
@@ -58,101 +73,97 @@ public class RequestHandler implements HttpHandler {
     }
 
     private String handlePost(HttpExchange httpExchange) throws IOException {
-        
+
         InputStream inStream = httpExchange.getRequestBody();
         Scanner scanner = new Scanner(inStream);
         String postData = scanner.nextLine();
-        String name = postData.substring(0,postData.indexOf("!"));
+        String name = postData.substring(0, postData.indexOf("!"));
         String type = postData.substring(postData.indexOf("!") + 1, postData.indexOf("="));
+
         String details = postData.substring(postData.indexOf("=") + 1);
-
-        MongoCollection<Document> recipesCollection;
-        MongoDatabase recipe_db;
-
-        // Store data in hashmap
-        String[] typeAndDetails = new String[]{type, details};
-        //data.put(name, typeAndDetails);
-
-        String uri = "mongodb+srv://admin:123@cluster0.cp02bnz.mongodb.net/?retryWrites=true&w=majority";
-        try (MongoClient mongoClient = MongoClients.create(uri)) {
-
-            recipe_db = mongoClient.getDatabase("recipe_db");
-            recipesCollection = recipe_db.getCollection("recipes"); 
-        
-            Document recipe = new Document("_id", new ObjectId());
-            recipe.append("name", name)
-                   .append("type", type)
-                   .append("details", details);
-
-            recipesCollection.insertOne(recipe);
+        while (scanner.hasNextLine()) {
+            postData = scanner.nextLine();
+            details += '\n';
+            details += postData;
         }
 
-        String response = "Posted entry {" + name + ", " + type +  "}";
-        //System.out.println(response + data.toString());
+        // Store data in hashmap
+        // String[] typeAndDetails = new String[]{type, details};
+        // data.put(name, typeAndDetails);
+        String id = new ObjectId().toString();
+        Document recipe = new Document("_id", id);
+        recipe.append("name", name)
+                .append("type", type)
+                .append("details", details);
+
+        recipesCollection.insertOne(recipe);
+
+        System.out.println(id + data.toString());
         scanner.close();
 
-        return response;
+        return id;
     }
 
     private String handleGet(HttpExchange httpExchange) throws IOException {
-        /* String response = "Invalid GET request";
+        String response = "Invalid GET request";
         URI uri = httpExchange.getRequestURI();
         String query = uri.getRawQuery();
-        if (query != null) {
-            String value = query.substring(query.indexOf("=") + 1);
-            String year = data.get(value); // Retrieve data from hashmap
-            if (year != null) {
-                response = year;
-                System.out.println("Queried for " + value + " and found " + year);
-            } else {
-                response = "No data found for " + value;
-            }
-        }*/
-        
-        return "HI";
+        response = "";
+        String id = query.substring(query.indexOf("=") + 1);
+        Document recipe = recipesCollection.find(eq("_id", id)).first();
+        if (recipe == null) {
+            return "Can't find recipe";
+        }
+        response += recipe.getString("name") + "!" + recipe.getString("type") + "="
+        + recipe.getString("details") + "";
+
+        return response;
+
     }
 
     private String handleDelete(HttpExchange httpExchange) throws IOException {
-        /* URI uri = httpExchange.getRequestURI();
-        String query = uri.getRawQuery();
-        if (query != null) {
-            String value = query.substring(query.indexOf("=") + 1);
-            String year = data.get(value); // Retrieve data from hashmap
-            if (year != null) {
-                data.remove(value);
-                response = "Deleted Entry {" + value + "," + year + "}";
-                System.out.println("Queried for " + value + " and found " + year);
-            } else {
-                response = "No data found for " + value;
-            }
-        } */
+        /*
+         * URI uri = httpExchange.getRequestURI();
+         * String query = uri.getRawQuery();
+         * if (query != null) {
+         * String value = query.substring(query.indexOf("=") + 1);
+         * String year = data.get(value); // Retrieve data from hashmap
+         * if (year != null) {
+         * data.remove(value);
+         * response = "Deleted Entry {" + value + "," + year + "}";
+         * System.out.println("Queried for " + value + " and found " + year);
+         * } else {
+         * response = "No data found for " + value;
+         * }
+         * }
+         */
         String response = "Invalid GET request";
-        
-        
+
         return response;
     }
 
     private String handlePut(HttpExchange httpExchange) throws IOException {
         /*
-        InputStream inStream = httpExchange.getRequestBody();
-        Scanner scanner = new Scanner(inStream);
-        String postData = scanner.nextLine();
-        String language = postData.substring(
-                0,
-                postData.indexOf(",")), year = postData.substring(postData.indexOf(",") + 1);
-
-        // Store data in hashmap
-        String response;
-        if (data.containsKey(language)) {
-            String previous = data.get(language);
-            response = "Updated entry {" + language + ", " + year + "} (previous year: " + previous + ")";
-        } else {
-            response = "Added entry {" + language + ", " + year + "}";
-        }
-
-        data.put(language, year);
-        System.out.println(response);
-        scanner.close();
+         * InputStream inStream = httpExchange.getRequestBody();
+         * Scanner scanner = new Scanner(inStream);
+         * String postData = scanner.nextLine();
+         * String language = postData.substring(
+         * 0,
+         * postData.indexOf(",")), year = postData.substring(postData.indexOf(",") + 1);
+         * 
+         * // Store data in hashmap
+         * String response;
+         * if (data.containsKey(language)) {
+         * String previous = data.get(language);
+         * response = "Updated entry {" + language + ", " + year + "} (previous year: "
+         * + previous + ")";
+         * } else {
+         * response = "Added entry {" + language + ", " + year + "}";
+         * }
+         * 
+         * data.put(language, year);
+         * System.out.println(response);
+         * scanner.close();
          */
 
         return "HI";

@@ -70,7 +70,7 @@ public class Model {
             if (method.equals("POST") || method.equals("PUT")) {
                 OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
                 out.write("temporary name" + "!" + typeAndDetails[0] + "=" + typeAndDetails[1]);
-                System.out.print("temporary name" + "!" + typeAndDetails[0] + "=" + typeAndDetails[1]);
+                //System.out.print("temporary name" + "!" + typeAndDetails[0] + "=" + typeAndDetails[1]);
                 out.flush();
                 out.close();
             }
@@ -300,6 +300,7 @@ class Recipe extends HBox {
     private Label recipeLabel;
     private String recipeTotal;
     private String recipeType;
+    private String id;
 
     private DetailedView currDetailedView;
     private DetailedController detailedController;
@@ -346,6 +347,15 @@ class Recipe extends HBox {
         });
          */
         
+    }
+
+
+    public String getID(){
+        return id;
+    }
+
+    public void setID(String id){
+        this.id = id;
     }
 
     public DetailedView getDetailedView(){
