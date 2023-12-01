@@ -1,6 +1,7 @@
 package client;
 
 import client.View.RecipeList;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 
 public class Controller {
@@ -12,6 +13,7 @@ public class Controller {
         this.model = model;
         
         this.view.setSaveButtonAction(this::handlePostButton);
+        this.view.setDeleteButtonAction(this::handleDeleteButton);
     }
 
     private void handlePostButton(ActionEvent event) {
@@ -21,9 +23,35 @@ public class Controller {
         String[] typeAndRecipe = new String[]{curr.getRecipeType(), curr.getRecipeTotal()};
         String response = model.performRequest("POST", curr.getRecipeLabelName(), typeAndRecipe, null);
         curr.setID(response);
-        //pinging to server
+        
         System.out.print("POST RESPONSE: " + response);
-        view.getRecipeList().getChildren().add(curr);
-        //view.showAlert("Response", response);
+        
+        new Thread(() -> {
+            view.getRecipeList().fetchRecipesFromMongoDB();
+
+            
+            Platform.runLater(() -> {
+                view.getRecipeList().updateRecipeListView();
+            });
+        }).start();
+        
+    }
+    // this code is not being used, using recipe controller for delete
+    public void handleDeleteButton(ActionEvent event) {
+
+        Recipe curr = view.getRecipe();
+
+        String response = model.performRequest("DELETE", null, null, curr.getQueryRecipeLabelName());
+        curr.getID();
+        
+        System.out.println("delete: " + response);
+
+        new Thread(() -> {
+            view.getRecipeList().fetchRecipesFromMongoDB();
+            Platform.runLater(() -> {
+                view.getRecipeList().updateRecipeListView();
+            });
+        }).start();
+
     }
 }

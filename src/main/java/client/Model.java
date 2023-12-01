@@ -321,6 +321,9 @@ class Recipe extends HBox {
                 "-fx-background-color: #FFA9A9; -fx-border-width: 0; -fx-border-color: #8B0000; -fx-font-weight: bold");
         this.getChildren().add(deleteButton);
 
+
+        
+
         detailedView = new Button("Detailed View");
         detailedView.setStyle(defaultButtonStyle);
         detailedView.setAlignment(Pos.CENTER_RIGHT);
@@ -335,18 +338,13 @@ class Recipe extends HBox {
         detailedController = new DetailedController(currDetailedView, model);
         recipeController = new RecipeController(this, model);
         //currDetailedView.getStage().show();
-
-
-        /*
-        deleteButton.setOnAction(e -> {
-            Controller.handleDeleteButton(e);
-        });
-
-        detailedView.setOnAction(e -> {
-            
-        });
-         */
         
+            
+     //   detailedView.setOnAction(e -> {
+            
+      //  });
+
+    
     }
 
 
@@ -357,6 +355,7 @@ class Recipe extends HBox {
     public void setID(String id){
         this.id = id;
     }
+
 
     public DetailedView getDetailedView(){
         return currDetailedView;
@@ -373,6 +372,7 @@ class Recipe extends HBox {
     public Button getDeleteButton() {
         return deleteButton;
     }
+    
 
     public String getRecipeLabelName() {
         return recipeLabel.getText();

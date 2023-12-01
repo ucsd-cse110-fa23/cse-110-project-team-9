@@ -5,9 +5,11 @@ import org.bson.json.JsonObject;
 import client.View.RecipeList;
 import javafx.event.ActionEvent;
 
+
 public class RecipeController {
     private static Model model;
     private Recipe recipe;
+    private static RecipeList recipeList;
     private static View view;
 
     public RecipeController(Recipe recipe, Model model) {
@@ -22,16 +24,11 @@ public class RecipeController {
 
         Recipe curr = this.recipe;
 
-        //String[] typeAndRecipe = new String[]{
-        //    curr.getRecipeType(), curr.getRecipeTotal()
-       // };
-        //System.out.println("delete: " + recipe.getRecipeLabelName());
         String response = model.performRequest("DELETE", null, null, recipe.getQueryRecipeLabelName());
         curr.getID();
 
+        //recipeList.deleteRecipe(curr);
         System.out.println("delete: " + response);
-
-       // view.getRecipeList().deleteRecipe(curr);
     }
 
     private void handleGetButton(ActionEvent event) {

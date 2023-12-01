@@ -140,13 +140,13 @@ public class DetailedView {
              * });
              */
             closeButton = new Button("Save and Close Detailed View");
-            /* 
+             
             closeButton.setOnAction(e -> {
                 recipeAsText.setEditable(false);
                 recipe.setRecipeTotal(recipeAsText.getText());
                 stage.close();
             });// add method to delete the recipe as a whole
-            */
+            
 
             closeButton.setStyle("-fx-font-weight: bold; -fx-font-size: 20");
 

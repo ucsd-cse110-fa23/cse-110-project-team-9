@@ -15,6 +15,12 @@ import java.net.http.HttpResponse;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import com.mongodb.client.ChangeStreamIterable;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+
 import org.json.JSONException;
 
 import java.io.*;
@@ -24,6 +30,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Modality;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.Observable;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -39,7 +47,33 @@ import java.io.*;
 import java.rmi.RMISecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+
 import javax.sound.sampled.*;
+import javafx.beans.InvalidationListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import org.bson.Document;
+
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.set;
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Projections.*;
+
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.MongoException;
+import com.mongodb.ServerApi;
+import com.mongodb.ServerApiVersion;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.changestream.ChangeStreamDocument;
+import com.mongodb.client.result.DeleteResult;
+
 
 public class View{
 
@@ -47,7 +81,7 @@ public class View{
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
     private Label recordingLabel;
-    private RecipeList recipeList;
+    private static RecipeList recipeList;
 
     private Recipe currRecipe;
 
@@ -95,6 +129,7 @@ public class View{
         appFrame.setScene(mainScene);
         saveButton = new Button("Save Recipe");
     }
+
 
     private BorderPane createMainLayout() {
         BorderPane root = new BorderPane();
@@ -173,14 +208,6 @@ public class View{
 
         Button closeButton = new Button("Back");
         closeButton.setOnAction(e -> popupStage.close());
-
-
-        /* 
-        recipe.getDeleteButton().setOnAction(e -> {
-            recipeList.deleteRecipe(recipe);
-        });
-        */
-        
         /* 
         saveButton.setOnAction(e -> {
             recipe.setRecipeName(ChatGPT.returnPrompt());
@@ -235,6 +262,10 @@ public class View{
 
     public void setSaveButtonAction(EventHandler<ActionEvent> eventHandler) {
         saveButton.setOnAction(eventHandler);
+    }
+
+    public void setDeleteButtonAction(EventHandler<ActionEvent> eventHandler) {
+        currRecipe.getDeleteButton().setOnAction(eventHandler);
     }
 
     private void audioToText() {
@@ -374,18 +405,73 @@ public class View{
             this.setAlignment(Pos.CENTER); // Align the text to the Center
         }
     }
+    
+    public class RecipeList extends VBox implements Observable {
 
-    class RecipeList extends VBox {
+        MongoCollection<Document> recipesCollection;
+        MongoDatabase recipe_db;
+        String uri;
+        MongoClient mongoClient;
 
+        private List<InvalidationListener> listeners;
+        private ObservableList<Recipe> recipes;
         RecipeList() {
+
+            uri = "mongodb+srv://admin:123@cluster0.cp02bnz.mongodb.net/?retryWrites=true&w=majority";
             this.setSpacing(3); // sets spacing between recipes
             this.setPrefSize(500, 560);
             this.setStyle("-fx-background-color: #F0F8FF;");
+
+            listeners = new ArrayList<>();
+            mongoClient = MongoClients.create(uri);
+            recipe_db = mongoClient.getDatabase("recipe_db");
+            recipesCollection = recipe_db.getCollection("recipes");
+
+            recipes = FXCollections.observableArrayList();
+            fetchRecipesFromMongoDB();
+        }
+        
+        public void deleteRecipe(Recipe recipe) {
+            recipesCollection.deleteOne(eq("name", recipe.getRecipeLabelName()));
+            notifyListeners();
         }
 
-        public void deleteRecipe(Recipe recipe) {
-            this.getChildren().remove(recipe);
+        public void fetchRecipesFromMongoDB() {
+            List<Document> recipeDocuments = recipesCollection.find().into(new ArrayList<>());
+            Platform.runLater(() -> {
+                recipes.clear(); 
+                for (Document document : recipeDocuments) {
+                    Recipe recipe = new Recipe();
+                    recipe.setRecipeName(document.getString("name"));
+                    recipe.setRecipeType(document.getString("type"));
+                    recipe.setRecipeTotal(document.getString("total"));
+                    recipes.add(recipe);
+                }
+                notifyListeners();
+            });
+        }
+        private void notifyListeners() {
+            for (InvalidationListener listener : listeners) {
+                listener.invalidated(this);
+            }
+        }
+        @Override
+        public void addListener(InvalidationListener listener) {
+            listeners.add(listener);
+        }
+        @Override
+        public void removeListener(InvalidationListener listener) {
+            listeners.remove(listener);
+        }
+        public ObservableList<Recipe> getRecipes() {
+            return recipes;
+        }
+        public void addRecipe(Recipe recipe) {
+            getChildren().add(recipe);
+        }
+        public void updateRecipeListView() {
+            recipeList.getChildren().clear(); 
+            recipeList.getChildren().addAll(recipeList.getRecipes()); 
         }
     }
-
-}
+} 
