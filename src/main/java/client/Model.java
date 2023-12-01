@@ -341,7 +341,7 @@ class Recipe extends HBox {
     private Button detailedView;
     private Label recipeLabel;
     private String recipeTotal;
-    private String recipeType;
+    private Label recipeType;
     private String id;
 
     private DetailedView currDetailedView;
@@ -434,12 +434,33 @@ class Recipe extends HBox {
         return recipeType;
     }
 
-    public void setRecipeType(String type) {
-        recipeType = type;
+    public void setRecipeName(String newRecipe) {// set title of recipe
+        if(newRecipe.length() > 0 && newRecipe.length() < 150) {
+             recipeLabel.setText(newRecipe);
+        } else if (newRecipe.length() >= 150) {
+            recipeLabel.setText(newRecipe.substring(0, 151));
+        } else {
+            return;
+        }
+        this.getChildren().add(1, recipeLabel);
     }
 
-    public void setRecipeName(String newRecipe) {// set title of recipe
-        recipeLabel.setText(newRecipe);
+    public void setRecipeType(String type) {
+
+        //Run this line only if trying to test meal type tag without microphone working (Meal type registers anything other than breakfast, lunch, dinner)
+        //recipeType.setText(type);
+
+        if(type.toLowerCase().contains("breakfast")) {
+            recipeType.setText("Breakfast");
+        } else if (type.toLowerCase().contains("lunch")) {
+            recipeType.setText("Lunch");
+        } else if (type.toLowerCase().contains("dinner")) {
+            recipeType.setText("Dinner"); 
+        } else {
+            return;
+        }
+        recipeType.setVisible(true);
+        this.getChildren().add(1, recipeType);
     }
 
     public void setRecipeTotal(String recipe) {

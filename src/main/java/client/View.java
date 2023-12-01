@@ -210,6 +210,7 @@ public class View{
         closeButton.setOnAction(e -> popupStage.close());
         
         Button saveRecipe = new Button("Save Recipe");
+        /* 
         //saveRecipe.setStyle(defaultButtonStyle);
         saveRecipe.setOnAction(e -> {
             currRecipe.setRecipeName(ChatGPT.returnPrompt());
@@ -219,6 +220,7 @@ public class View{
             popupStage.close();
 
         });
+         */
 
         Button refreshButton = new Button("Regenerate Recipe");
         //refreshButton.setStyle(defaultButtonStyle);

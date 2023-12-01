@@ -1,3 +1,4 @@
+
 /* 
 package client;
 
@@ -19,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AppFrameTest {
+    View v= new View(null);
+    Stage a= v.getAppFrame();
     //private static Recipe r = new Recipe();
 
      @Test
@@ -275,6 +278,7 @@ public class AppFrameTest {
             e.printStackTrace();
         }
     }
+}
     
 /* 
     @Test
@@ -298,8 +302,6 @@ public class AppFrameTest {
         
        
     }
-
-
 
     @Test
     void invalidChatGptinputTest(){
