@@ -6,11 +6,17 @@
     "configurations": [
         {
             "type": "java",
+            "name": "MyServer",
+            "request": "launch",
+            "mainClass": "server.MyServer",
+            "projectName": "cse-110-project-team-9"
+        },
+        {
+            "type": "java",
             "name": "audio",
             "request": "launch",
             "mainClass": "client.PantryPalApp",
-            "vmArgs": "--module-path 'c:/Users/daniel/Downloads/openjfx-21.0.1_windows-x64_bin-sdk/javafx-sdk-21.0.1/lib' --add-modules javafx.controls,javafx.fxml"
-
+            "vmArgs": "--module-path 'C:/Users/prana/OneDrive/Documents/UCSD/3rd year courses/CSE 110/javafx-sdk-21/lib' --add-modules javafx.controls,javafx.fxml"
         },
         {
             "type": "java",

@@ -70,7 +70,7 @@ public class PantryPalApp extends Application {
                     Platform.runLater(() -> {
                         view.getRecipeList().updateRecipeListView();
                     });
-                    Thread.sleep(2500); //sleep time
+                    Thread.sleep(5000); //sleep time
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

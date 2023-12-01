@@ -208,14 +208,29 @@ public class View{
 
         Button closeButton = new Button("Back");
         closeButton.setOnAction(e -> popupStage.close());
-        /* 
-        saveButton.setOnAction(e -> {
-            recipe.setRecipeName(ChatGPT.returnPrompt());
-            recipe.setRecipeTotal(currRecipeText);
-            recipeList.getChildren().add(recipe);
+        
+        Button saveRecipe = new Button("Save Recipe");
+        //saveRecipe.setStyle(defaultButtonStyle);
+        saveRecipe.setOnAction(e -> {
+            currRecipe.setRecipeName(ChatGPT.returnPrompt());
+            currRecipe.setRecipeTotal(ChatGPT.getResult());
+            currRecipe.setRecipeType(currRecipe.getRecipeType());// MAYBE correct?
+            recipeList.getChildren().add(currRecipe);
             popupStage.close();
+
         });
-        */
+
+        Button refreshButton = new Button("Regenerate Recipe");
+        //refreshButton.setStyle(defaultButtonStyle);
+        refreshButton.setOnAction(e -> {
+            ingredientsToRecipe();
+             currRecipe.setRecipeName(ChatGPT.returnPrompt());
+            currRecipe.setRecipeTotal(ChatGPT.getResult());
+            String recipeLabel = "Recipe Preview: " + currRecipe.getRecipeTotal();
+            recipeText.setText(recipeLabel);
+            recipeText.setVisible(true);
+        });
+
 
         BorderPane popupLayout = new BorderPane();
         Scene popupScene = new Scene(popupLayout, 600, 600);
@@ -252,7 +267,7 @@ public class View{
         popupLayout.setCenter(scroller);
 
         HBox bottomBox = new HBox();
-        bottomBox.getChildren().addAll(closeButton, saveButton);
+        bottomBox.getChildren().addAll(refreshButton, closeButton, saveButton);
         bottomBox.setAlignment(Pos.CENTER);
         bottomBox.setSpacing(5);
         popupLayout.setBottom(bottomBox);
