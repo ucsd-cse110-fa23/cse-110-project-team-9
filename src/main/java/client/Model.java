@@ -198,7 +198,14 @@ class MockChatGPT extends ChatGPT{
         }
     }
 
-
+class MockWhisper extends Whisper{
+    private static String result1;
+    private static String result2;
+    public static void main(String[] args) throws IOException, URISyntaxException {
+        result1 = "Ingrediants";
+        result2 = "Meal Type";
+    }
+}
 
 class Whisper {
 
@@ -326,15 +333,6 @@ class Whisper {
 
 }
 
-class MockWhisper extends Whisper{
-    private static String result1;
-    private static String result2;
-    public static void main(String[] args) throws IOException, URISyntaxException {
-        result1 = "Ingrediants";
-        result2 = "Meal Type";
-    }
-}
-
 class Recipe extends HBox {
 
     private Button deleteButton;
@@ -374,6 +372,11 @@ class Recipe extends HBox {
         recipeLabel.setStyle(defaultLabelStyle);
         recipeLabel.setTextAlignment(TextAlignment.CENTER);
 
+        recipeType = new Label("Recipe Type: NONE");
+        recipeType.setStyle("-fx-background-color: #BCEAD5; -fx-border-width: 1; -fx-border-color: #BCEAD5; -fx-font-weight: bold; -fx-pref-height: 30px");
+        recipeType.setTextAlignment(TextAlignment.CENTER);
+
+
         this.getChildren().addAll(recipeLabel, detailedView);
         currDetailedView = new DetailedView(this);
         Model model = new Model();
@@ -389,6 +392,7 @@ class Recipe extends HBox {
     
     }
 
+   
 
     public String getID(){
         return id;
@@ -431,22 +435,11 @@ class Recipe extends HBox {
     }
 
     public String getRecipeType() {
-        return recipeType;
-    }
-
-    public void setRecipeName(String newRecipe) {// set title of recipe
-        if(newRecipe.length() > 0 && newRecipe.length() < 150) {
-             recipeLabel.setText(newRecipe);
-        } else if (newRecipe.length() >= 150) {
-            recipeLabel.setText(newRecipe.substring(0, 151));
-        } else {
-            return;
-        }
-        this.getChildren().add(1, recipeLabel);
+        return recipeType.toString();
     }
 
     public void setRecipeType(String type) {
-
+        
         //Run this line only if trying to test meal type tag without microphone working (Meal type registers anything other than breakfast, lunch, dinner)
         //recipeType.setText(type);
 
@@ -459,8 +452,19 @@ class Recipe extends HBox {
         } else {
             return;
         }
-        recipeType.setVisible(true);
+        //recipeType.setVisible(true);
         this.getChildren().add(1, recipeType);
+    }
+
+    public void setRecipeName(String newRecipe) {// set title of recipe
+       if(newRecipe.length() > 0 && newRecipe.length() < 150) {
+             recipeLabel.setText(newRecipe);
+        } else if (newRecipe.length() >= 150) {
+            recipeLabel.setText(newRecipe.substring(0, 151));
+        } else {
+            return;
+        }
+       // this.getChildren().add(1, recipeLabel); WHAT does this do?
     }
 
     public void setRecipeTotal(String recipe) {

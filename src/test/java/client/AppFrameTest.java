@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import client.View.RecipeList;
 import javafx.scene.control.Button;
+import javafx.stage.Stage;
 
 import org.junit.jupiter.api.BeforeEach;
 

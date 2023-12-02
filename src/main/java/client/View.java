@@ -37,6 +37,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.control.Label;
@@ -385,6 +386,7 @@ public class View{
     class Footer extends HBox {
 
         private Button addButton;
+        private ChoiceBox<String> filter = new ChoiceBox<>();
 
         Footer() {
             this.setPrefSize(500, 60);
@@ -400,9 +402,33 @@ public class View{
             addButton.setOnAction(e -> {
                 openPopup();
             });
+            
 
-            this.getChildren().addAll(addButton);
+            filter.getItems().addAll("All", "Breakfast", "Lunch", "Dinner");//dropdown of filter button
+            filter.setValue("All");//defualt filtering
+
+            Button filterButton= new Button("filter");
+            filterButton.setOnAction(e-> getChoice(filter));
+
+            this.getChildren().addAll(addButton, filter, filterButton);
             this.setAlignment(Pos.CENTER); // aligning the buttons to center
+        }
+
+        private void getChoice(ChoiceBox<String> filters){
+            String type= filters.getValue();//gets the type meal type to filter for
+                if(type== "Breakfast"){
+                    recipeList.updateFilteredBreakfast();
+                }
+                else if(type=="Lunch"){
+                    recipeList.updateFilteredLunch();
+                }
+                else if(type== "Dinner"){
+                    recipeList.updateFilteredDinner();
+                }
+                else{
+                    recipeList.updateRecipeListView();
+                    System.out.println(type);
+                }
         }
 
         public Button getAddButton() {
@@ -490,5 +516,37 @@ public class View{
             recipeList.getChildren().clear(); 
             recipeList.getChildren().addAll(recipeList.getRecipes()); 
         }
+
+        public void updateFilteredBreakfast(){
+            RecipeList copy= recipeList;
+            recipeList.getChildren().clear(); 
+            for(Recipe r: copy.getRecipes()){
+                if(r.getRecipeType().contains("Breakfast")){
+                    recipeList.getChildren().add(r);
+                }
+            }
+          
+        }
+
+        public void updateFilteredLunch(){
+            RecipeList copy= recipeList;
+            recipeList.getChildren().clear(); 
+            for(Recipe r: copy.getRecipes()){
+                if(r.getRecipeType().contains("Lunch")){
+                    recipeList.getChildren().add(r);
+                }
+            }
+        }
+
+        public void updateFilteredDinner(){
+            RecipeList copy= recipeList;
+            recipeList.getChildren().clear(); 
+            for(Recipe r: copy.getRecipes()){
+                if(r.getRecipeType().contains("Dinner")){
+                    recipeList.getChildren().add(r);
+                }
+            }
+        }
+
     }
 } 
