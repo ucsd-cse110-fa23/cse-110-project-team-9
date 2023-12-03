@@ -294,13 +294,51 @@ class Whisper {
 
 }
 
+class MockChatGPT extends ChatGPT{
+        private static String resultRecipe;
+        private static String resultMealType;
+
+        public void setResult(String mealType, String ingrediants){
+            if (mealType == "breakfast"){
+                resultRecipe = "A breakfast recipe with " + ingrediants;
+            }
+            else if (mealType == "lunch"){
+                resultRecipe = "A lunch recipe with " + ingrediants;
+            }
+            else if (mealType == "dinner"){
+                resultRecipe = "A dinner recipe with " + ingrediants;
+            }
+            else{
+                resultRecipe = "random recipe with " + ingrediants;
+            }
+            resultMealType = mealType;
+        }
+
+        public String getResultRecipe() {
+            return resultRecipe;
+        }
+
+        public String getMealType(){
+            return resultMealType;
+        }
+    }
+
+class MockWhisper extends Whisper{
+    private static String result1;
+    private static String result2;
+    public static void main(String[] args) throws IOException, URISyntaxException {
+        result1 = "Ingredients";
+        result2 = "Meal Type";
+    }
+}
+
 class Recipe extends HBox {
 
     private Button deleteButton;
     private Button detailedView;
     private Label recipeLabel;
     private String recipeTotal;
-    private String recipeType;
+    private Label recipeType;
     private String id;
 
     private DetailedView currDetailedView;
@@ -329,7 +367,11 @@ class Recipe extends HBox {
         recipeLabel.setStyle(defaultLabelStyle);
         recipeLabel.setTextAlignment(TextAlignment.CENTER);
 
-        this.getChildren().addAll(recipeLabel, detailedView);
+        recipeType = new Label("Recipe Type: NONE");
+        recipeType.setStyle("-fx-background-color: #BCEAD5; -fx-border-width: 1; -fx-border-color: #BCEAD5; -fx-font-weight: bold; -fx-pref-height: 30px");
+        recipeType.setTextAlignment(TextAlignment.CENTER);
+
+        this.getChildren().addAll(recipeType, recipeLabel, detailedView);
         currDetailedView = new DetailedView(this, this.getRecipeTotal());
         Model model = new Model();
         detailedController = new DetailedController(currDetailedView, model);
@@ -377,11 +419,24 @@ class Recipe extends HBox {
     }
 
     public String getRecipeType() {
-        return recipeType;
+        return recipeType.getText();
     }
 
     public void setRecipeType(String type) {
-        recipeType = type;
+        //Run this line only if trying to test meal type tag without microphone working (Meal type registers anything other than breakfast, lunch, dinner)
+        //recipeType.setText(type);
+
+        if(type.toLowerCase().contains("breakfast")) {
+            recipeType.setText("Breakfast");
+        } else if (type.toLowerCase().contains("lunch")) {
+            recipeType.setText("Lunch");
+        } else if (type.toLowerCase().contains("dinner")) {
+            recipeType.setText("Dinner"); 
+        } else {
+            return;
+        }
+        //recipeType.setVisible(true);
+        //this.getChildren().add(1, recipeType);
     }
 
     public void setRecipeName(String newRecipe) {// set title of recipe

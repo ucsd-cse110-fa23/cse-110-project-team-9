@@ -37,6 +37,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.control.Label;
@@ -55,7 +56,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.bson.Document;
 
-import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 import static com.mongodb.client.model.Filters.*;
@@ -91,26 +91,21 @@ public class View{
     public Stage getAppFrame(){
         return appFrame;
     }
-
     public Recipe getRecipe(){
         return currRecipe;
     }
     public String getRecipeText(){
         return currRecipe.getRecipeTotal();
     }
-
     public String getRecipeType(){
         return currRecipe.getRecipeType();
     }
-
     public String getRecipeName(){
         return currRecipe.getRecipeLabelName();
     }
-
     public RecipeList getRecipeList(){
         return recipeList;
     }
-
     public void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -217,6 +212,18 @@ public class View{
         });
         */
 
+        Button refreshButton = new Button("Regenerate Recipe");
+        // refreshButton.setStyle(defaultButtonStyle);
+        refreshButton.setOnAction(e -> {
+            ingredientsToRecipe();
+            currRecipe.setRecipeName(ChatGPT.returnPrompt());
+            currRecipe.setRecipeTotal(ChatGPT.getResult());
+            String recipeLabel = "Recipe Preview: " + currRecipe.getRecipeTotal();
+            recipeText.setText(recipeLabel);
+            recipeText.setVisible(true);
+        });
+
+
         BorderPane popupLayout = new BorderPane();
         Scene popupScene = new Scene(popupLayout, 600, 600);
         popupStage.setScene(popupScene);
@@ -252,7 +259,7 @@ public class View{
         popupLayout.setCenter(scroller);
 
         HBox bottomBox = new HBox();
-        bottomBox.getChildren().addAll(closeButton, saveButton);
+        bottomBox.getChildren().addAll(refreshButton, closeButton, saveButton);
         bottomBox.setAlignment(Pos.CENTER);
         bottomBox.setSpacing(5);
         popupLayout.setBottom(bottomBox);
@@ -368,6 +375,8 @@ public class View{
     class Footer extends HBox {
 
         private Button addButton;
+        private ChoiceBox<String> filter = new ChoiceBox<>();
+        private ChoiceBox<String> sorter= new ChoiceBox<>();
 
         Footer() {
             this.setPrefSize(500, 60);
@@ -384,8 +393,45 @@ public class View{
                 openPopup();
             });
 
-            this.getChildren().addAll(addButton);
+            filter.getItems().addAll("All", "Breakfast", "Lunch", "Dinner");//dropdown of filter button
+            filter.setValue("All");//defualt filtering
+
+            Button filterButton= new Button("Filter");
+            filterButton.setOnAction(e-> getFilterChoice(filter));
+
+            sorter.getItems().addAll("New to Old", "Old to New", "Alphabetical", "Reverse Alphabetical");
+            sorter.setValue("old to new");
+
+            Button sorterButton= new Button("Sort");
+            sorterButton.setOnAction(e -> getSortChoice(sorter));
+
+            this.getChildren().addAll(addButton, filter, filterButton , sorter, sorterButton);
             this.setAlignment(Pos.CENTER); // aligning the buttons to center
+        
+        }
+        
+        private void getFilterChoice(ChoiceBox<String> filters){
+            
+            String type = filters.getValue();// gets the type meal type to filter for
+            recipeList.setFilter(type);
+            //recipeList.updateRecipeListView();
+
+        }
+
+        private void getSortChoice(ChoiceBox<String> sort){
+            String type= sort.getValue();//gets the sort selection
+            if(type== "New to Old"){
+                //recipeList.updateSorted1();
+            }
+            else if(type=="Old to New"){
+                //recipeList.updateSorted2();
+            }
+            else if(type== "Alphabetical"){
+                //recipeList.updateSorted3();
+            }
+            else if (type == "Reverse Alphabetical" ){//reverse alphabetical
+                //recipeList.updateSorted4();
+            }
         }
 
         public Button getAddButton() {
@@ -415,6 +461,8 @@ public class View{
 
         private List<InvalidationListener> listeners;
         private ObservableList<Recipe> recipes;
+        private String filterType = "All";
+
         RecipeList() {
 
             uri = "mongodb+srv://admin:123@cluster0.cp02bnz.mongodb.net/?retryWrites=true&w=majority";
@@ -439,17 +487,52 @@ public class View{
         public void fetchRecipesFromMongoDB() {
             List<Document> recipeDocuments = recipesCollection.find().into(new ArrayList<>());
             Platform.runLater(() -> {
-                recipes.clear(); 
-                for (Document document : recipeDocuments) {
-                    Recipe recipe = new Recipe();
-                    recipe.setRecipeName(document.getString("name"));
-                    recipe.setRecipeType(document.getString("type"));
-                    recipe.setRecipeTotal(document.getString("total"));
-                    recipes.add(recipe);
+                recipes.clear();
+
+                if (filterType.compareTo("All") == 0) {
+                    for (Document document : recipeDocuments) {
+                        Recipe recipe = new Recipe();
+                        recipe.setRecipeName(document.getString("name"));
+                        recipe.setRecipeType(document.getString("type"));
+                        recipe.setRecipeTotal(document.getString("total"));
+                        recipes.add(recipe);
+                    }
+                } else if (filterType.compareTo("Breakfast") == 0) {
+                    for (Document document : recipeDocuments) {
+                        if (document.getString("type").compareTo("Breakfast") == 0) {
+                            Recipe recipe = new Recipe();
+                            recipe.setRecipeName(document.getString("name"));
+                            recipe.setRecipeType(document.getString("type"));
+                            recipe.setRecipeTotal(document.getString("total"));
+                            recipes.add(recipe);
+                        }
+                    }
+                } else if (filterType.compareTo("Lunch") == 0) {
+                    for (Document document : recipeDocuments) {
+                        if (document.getString("type").compareTo("Lunch") == 0) {
+                            Recipe recipe = new Recipe();
+                            recipe.setRecipeName(document.getString("name"));
+                            recipe.setRecipeType(document.getString("type"));
+                            recipe.setRecipeTotal(document.getString("total"));
+                            recipes.add(recipe);
+                        }
+                    }
+                } else if (filterType.compareTo("Dinner") == 0) {
+                    for (Document document : recipeDocuments) {
+                        if (document.getString("type").compareTo("Dinner") == 0) {
+                            Recipe recipe = new Recipe();
+                            recipe.setRecipeName(document.getString("name"));
+                            recipe.setRecipeType(document.getString("type"));
+                            recipe.setRecipeTotal(document.getString("total"));
+                            recipes.add(recipe);
+                        }
+                    }
                 }
+
                 notifyListeners();
             });
         }
+
         private void notifyListeners() {
             for (InvalidationListener listener : listeners) {
                 listener.invalidated(this);
@@ -469,9 +552,40 @@ public class View{
         public void addRecipe(Recipe recipe) {
             getChildren().add(recipe);
         }
+        public void setFilter(String newFilter) {
+            filterType = newFilter;
+        }
+        
         public void updateRecipeListView() {
-            recipeList.getChildren().clear(); 
-            recipeList.getChildren().addAll(recipeList.getRecipes()); 
+            if (filterType.compareTo("All") == 0) {
+                recipeList.getChildren().clear();
+                recipeList.getChildren().addAll(recipeList.getRecipes());
+            } else if (filterType.compareTo("Breakfast") == 0) {
+                RecipeList copy = recipeList;
+                recipeList.getChildren().clear();
+                for (Recipe r : copy.getRecipes()) {
+                    if (r.getRecipeType().contains("Breakfast")) {
+                        recipeList.getChildren().add(r);
+                    }
+                }
+            } else if (filterType.compareTo("Lunch") == 0) {
+                RecipeList copy = recipeList;
+                recipeList.getChildren().clear();
+                for (Recipe r : copy.getRecipes()) {
+                    if (r.getRecipeType().contains("Lunch")) {
+                        recipeList.getChildren().add(r);
+                    }
+                }
+            } else if (filterType.compareTo("Dinner") == 0) {
+                RecipeList copy = recipeList;
+                recipeList.getChildren().clear();
+                for (Recipe r : copy.getRecipes()) {
+                    if (r.getRecipeType().contains("Dinner")) {
+                        recipeList.getChildren().add(r);
+                    }
+                }
+            }
+
         }
     }
 } 
