@@ -452,7 +452,7 @@ class Recipe extends HBox {
         } else {
             return;
         }
-        //recipeType.setVisible(true);
+        recipeType.setVisible(true);
         this.getChildren().add(1, recipeType);
     }
 

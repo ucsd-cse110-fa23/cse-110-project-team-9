@@ -1,5 +1,5 @@
-
 /* 
+ 
 package client;
 
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AppFrameTest {
-    View v= new View(null);
+    Stage s= new Stage();
+    View v= new View(s);
     Stage a= v.getAppFrame();
     //private static Recipe r = new Recipe();
 
@@ -54,8 +55,8 @@ public class AppFrameTest {
     void savetoRecipeListTest(){
         try {
             Recipe r= new Recipe();
-            AppFrame af = new AppFrame();
-            RecipeList rl = af.new RecipeList();
+            
+            RecipeList rl = v.new RecipeList();
             Recipe r2=new Recipe();
             rl.getChildren().add(r2);
 
@@ -99,8 +100,8 @@ public class AppFrameTest {
     void deleteRecipeTest(){
         try {
             Recipe r= new Recipe();
-            AppFrame af = new AppFrame();
-            RecipeList rl=af.new RecipeList();
+            
+            RecipeList rl=v.new RecipeList();
             Recipe r2=new Recipe();
             rl.getChildren().add(r2);
 
@@ -123,8 +124,8 @@ public class AppFrameTest {
     void saveRecipeNewTest(){
         try {
             Recipe r= new Recipe();
-            AppFrame af = new AppFrame();
-            RecipeList rl = af.new RecipeList();
+          
+            RecipeList rl = v.new RecipeList();
 
             String s= "save";
             if(s=="save"){
@@ -177,8 +178,8 @@ public class AppFrameTest {
     void MealTypeTagBDD1(){
         try{
             Recipe r = new Recipe();
-            AppFrame af = new AppFrame();
-            RecipeList rl = af.new RecipeList();
+            
+            RecipeList rl = v.new RecipeList();
             MockChatGPT mcg = new MockChatGPT();
             mcg.setResult("breakfast", "bagels and creamcheese");
             r.setRecipeTotal(mcg.getResultRecipe());
@@ -197,8 +198,8 @@ public class AppFrameTest {
     void MealTypeTagBDD2(){
         try{
             Recipe r = new Recipe();
-            AppFrame af = new AppFrame();
-            RecipeList rl = af.new RecipeList();
+            
+            RecipeList rl = v.new RecipeList();
             MockChatGPT mcg = new MockChatGPT();
             mcg.setResult("", "bagels and creamcheese");
             r.setRecipeTotal(mcg.getResultRecipe());
@@ -212,14 +213,68 @@ public class AppFrameTest {
         }
     }
 
-     
     @Test
-    //This BDD tests for when a user saves a refreshed recipe
+    //This BDD tests for when a user doesn't refresh and then saves
     void RefreshBDD1(){
         try{
             Recipe r = new Recipe();
-            AppFrame af = new AppFrame();
-            RecipeList rl = af.new RecipeList();
+           
+            RecipeList rl = v.new RecipeList();
+            MockChatGPT mcg = new MockChatGPT();
+            MockWhisper mv= new MockWhisper();
+            String refresh=" no refresh";
+            mcg.setResult("breakfast", "bagels and creamcheese");
+            r.setRecipeTotal(mcg.getResultRecipe());
+            r.setRecipeType(mcg.getMealType());
+            if(refresh=="no refresh"){
+
+                rl.getChildren().add(r);
+                String newrecipe="";
+            }
+           assertEquals(rl.getChildren().contains(r), true);
+
+        }catch (ExceptionInInitializerError e) {
+            e.printStackTrace();
+        } catch (NoClassDefFoundError e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    //This BDD tests for when a user doesn't refresh and then cancels
+    void RefreshBDD2(){
+        try{
+            Recipe r = new Recipe();
+           
+            RecipeList rl = v.new RecipeList();
+            MockChatGPT mcg = new MockChatGPT();
+            MockWhisper mv= new MockWhisper();
+            String refresh="no refresh";
+            mcg.setResult("breakfast", "bagels and creamcheese");
+            r.setRecipeTotal(mcg.getResultRecipe());
+            r.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r);
+            String cancel="cancel";
+            
+            if(cancel=="cancel" && refresh== "no refresh"){
+                rl.deleteRecipe(r);
+            }
+            assertEquals(rl.getChildren().contains(r), false);
+
+        }catch (ExceptionInInitializerError e) {
+            e.printStackTrace();
+        } catch (NoClassDefFoundError e) {
+            e.printStackTrace();
+        }
+    }
+     
+    @Test
+    //This BDD tests for when a user saves a refreshed recipe
+    void RefreshBDD3(){
+        try{
+            Recipe r = new Recipe();
+           
+            RecipeList rl = v.new RecipeList();
             MockChatGPT mcg = new MockChatGPT();
             MockWhisper mv= new MockWhisper();
             String refresh="refresh";
@@ -243,14 +298,15 @@ public class AppFrameTest {
         }
     }
     
+    
 
     @Test
     //This BDD tests for when a user cancels a refreshed recipe
     void RefreshBDD4(){
         try{
             Recipe r = new Recipe();
-            AppFrame af = new AppFrame();
-            RecipeList rl = af.new RecipeList();
+           
+            RecipeList rl = v.new RecipeList();
             MockChatGPT mcg = new MockChatGPT();
             MockWhisper mv= new MockWhisper();
             String refresh="refresh";
@@ -279,6 +335,229 @@ public class AppFrameTest {
             e.printStackTrace();
         }
     }
+
+
+    @Test
+    void FilterMealtypeSelected(){
+        try{
+            Recipe r = new Recipe();
+            Recipe r2= new Recipe();
+            RecipeList rl = v.new RecipeList();
+            MockChatGPT mcg = new MockChatGPT();
+            mcg.setResult("breakfast", "bagels and creamcheese");
+            r.setRecipeTotal(mcg.getResultRecipe());
+            r.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r);
+            assertEquals(r.getRecipeType().toString(), "breakfast");
+
+            mcg.setResult("lunch", "beef and tomatos");
+            r2.setRecipeTotal(mcg.getResultRecipe());
+            r2.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r2);
+            assertEquals(r2.getRecipeType().toString(), "lunch");
+    
+            rl.updateFilteredLunch();
+            
+            assertNotEquals(rl.getRecipes().contains(r), true);
+            assertEquals(rl.getRecipes().contains(r2), true);
+            
+
+        }catch (ExceptionInInitializerError e) {
+            e.printStackTrace();
+        } catch (NoClassDefFoundError e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void FilterMealtypeNotSelected(){
+        try{
+            Recipe r = new Recipe();
+            Recipe r2= new Recipe();
+            RecipeList rl = v.new RecipeList();
+            MockChatGPT mcg = new MockChatGPT();
+            mcg.setResult("breakfast", "bagels and creamcheese");
+            r.setRecipeTotal(mcg.getResultRecipe());
+            r.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r);
+            assertEquals(r.getRecipeType().toString(), "breakfast");
+
+            mcg.setResult("lunch", "beef and tomatos");
+            r2.setRecipeTotal(mcg.getResultRecipe());
+            r2.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r2);
+            assertEquals(r2.getRecipeType().toString(), "lunch");
+    
+            //rl.updateFilteredBreakfast();
+            assertEquals(rl.getRecipes().contains(r2), true);
+            assertEquals(rl.getRecipes().contains(r), true);
+
+        }catch (ExceptionInInitializerError e) {
+            e.printStackTrace();
+        } catch (NoClassDefFoundError e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Test
+    void FilterMealtypeSelectandNotSelected(){
+        try{
+            Recipe r = new Recipe();
+            Recipe r2= new Recipe();
+            RecipeList rl = v.new RecipeList();
+            MockChatGPT mcg = new MockChatGPT();
+            mcg.setResult("breakfast", "bagels and creamcheese");
+            r.setRecipeTotal(mcg.getResultRecipe());
+            r.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r);
+            assertEquals(r.getRecipeType().toString(), "breakfast");
+
+            mcg.setResult("lunch", "beef and tomatos");
+            r2.setRecipeTotal(mcg.getResultRecipe());
+            r2.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r2);
+            assertEquals(r2.getRecipeType().toString(), "lunch");
+    
+            rl.updateFilteredBreakfast();
+            assertNotEquals(rl.getRecipes().contains(r2), true);
+            assertEquals(rl.getRecipes().contains(r), true);
+
+            rl.updateRecipeListView();
+            assertEquals(rl.getRecipes().contains(r2), true);
+            assertEquals(rl.getRecipes().contains(r), true);
+
+        }catch (ExceptionInInitializerError e) {
+            e.printStackTrace();
+        } catch (NoClassDefFoundError e) {
+            e.printStackTrace();
+        }
+    }
+    @Test
+    void sortChronilogical(){
+        try{
+            Recipe r = new Recipe();
+            Recipe r2= new Recipe();
+            RecipeList rl = v.new RecipeList();
+            MockChatGPT mcg = new MockChatGPT();
+            mcg.setResult("breakfast", "bagels and creamcheese");
+            r.setRecipeTotal(mcg.getResultRecipe());
+            r.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r);
+            assertEquals(r.getRecipeType().toString(), "breakfast");
+
+            mcg.setResult("lunch", "beef and tomatos");
+            r2.setRecipeTotal(mcg.getResultRecipe());
+            r2.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r2);
+            assertEquals(r2.getRecipeType().toString(), "lunch");
+
+            rl.updateSorted1();
+            assertEquals(rl.getRecipes().indexOf(r), 1);
+            assertEquals(rl.getRecipes().indexOf(r2), 0);
+        }
+        catch(ExceptionInInitializerError e){
+            e.printStackTrace();
+        }
+        catch(NoClassDefFoundError e){
+            e.printStackTrace();
+        }
+    }
+    @Test
+    void sortReverseChronilogical(){
+        try{
+            Recipe r = new Recipe();
+            Recipe r2= new Recipe();
+            RecipeList rl = v.new RecipeList();
+            MockChatGPT mcg = new MockChatGPT();
+            mcg.setResult("breakfast", "bagels and creamcheese");
+            r.setRecipeTotal(mcg.getResultRecipe());
+            r.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r);
+            assertEquals(r.getRecipeType().toString(), "breakfast");
+
+            mcg.setResult("lunch", "beef and tomatos");
+            r2.setRecipeTotal(mcg.getResultRecipe());
+            r2.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r2);
+            assertEquals(r2.getRecipeType().toString(), "lunch");
+
+            rl.updateSorted2();
+            assertEquals(rl.getRecipes().indexOf(r), 0);
+            assertEquals(rl.getRecipes().indexOf(r2), 1);
+        }
+        catch(ExceptionInInitializerError e){
+            e.printStackTrace();
+        }
+        catch(NoClassDefFoundError e){
+            e.printStackTrace();
+        }
+    }
+
+
+    @Test
+    void sortAlphabetical(){
+        try{
+            Recipe r = new Recipe();
+            Recipe r2= new Recipe();
+            RecipeList rl = v.new RecipeList();
+            MockChatGPT mcg = new MockChatGPT();
+            mcg.setResult("breakfast", "bagels and creamcheese");
+            r.setRecipeTotal(mcg.getResultRecipe());
+            r.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r);
+            assertEquals(r.getRecipeType().toString(), "breakfast");
+
+            mcg.setResult("lunch", "carrot and tomatos");
+            r2.setRecipeTotal(mcg.getResultRecipe());
+            r2.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r2);
+            assertEquals(r2.getRecipeType().toString(), "lunch");
+
+            rl.updateSorted2();
+            assertEquals(rl.getRecipes().indexOf(r), 1);
+            assertEquals(rl.getRecipes().indexOf(r2), 0);
+        }
+        catch(ExceptionInInitializerError e){
+            e.printStackTrace();
+        }
+        catch(NoClassDefFoundError e){
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void sortReverseAlphabetical(){
+        try{
+            Recipe r = new Recipe();
+            Recipe r2= new Recipe();
+            RecipeList rl = v.new RecipeList();
+            MockChatGPT mcg = new MockChatGPT();
+            mcg.setResult("breakfast", "bagels and creamcheese");
+            r.setRecipeTotal(mcg.getResultRecipe());
+            r.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r);
+            assertEquals(r.getRecipeType().toString(), "breakfast");
+
+            mcg.setResult("lunch", "carrot and tomatos");
+            r2.setRecipeTotal(mcg.getResultRecipe());
+            r2.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r2);
+            assertEquals(r2.getRecipeType().toString(), "lunch");
+
+            rl.updateSorted2();
+            assertEquals(rl.getRecipes().indexOf(r), 0);
+            assertEquals(rl.getRecipes().indexOf(r2), 1);
+        }
+        catch(ExceptionInInitializerError e){
+            e.printStackTrace();
+        }
+        catch(NoClassDefFoundError e){
+            e.printStackTrace();
+        }
+    }
+
+
 }
     
 /* 

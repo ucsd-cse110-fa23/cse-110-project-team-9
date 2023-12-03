@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-
+import java.util.Comparator;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -73,6 +73,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.changestream.ChangeStreamDocument;
+import com.mongodb.client.model.search.CompoundSearchOperator;
 import com.mongodb.client.result.DeleteResult;
 
 
@@ -387,6 +388,7 @@ public class View{
 
         private Button addButton;
         private ChoiceBox<String> filter = new ChoiceBox<>();
+        private ChoiceBox<String> sorter= new ChoiceBox<>();
 
         Footer() {
             this.setPrefSize(500, 60);
@@ -410,7 +412,13 @@ public class View{
             Button filterButton= new Button("filter");
             filterButton.setOnAction(e-> getChoice(filter));
 
-            this.getChildren().addAll(addButton, filter, filterButton);
+            sorter.getItems().addAll("new to old", "old to new", "alphabetical", "reverse alphabetical");
+            sorter.setValue("old to new");
+
+            Button sorterButton= new Button("Sort");
+            sorterButton.setOnAction(e -> getChoice2(sorter));
+
+            this.getChildren().addAll(addButton, filter, filterButton , sorter, sorterButton);
             this.setAlignment(Pos.CENTER); // aligning the buttons to center
         }
 
@@ -427,8 +435,23 @@ public class View{
                 }
                 else{
                     recipeList.updateRecipeListView();
-                    System.out.println(type);
                 }
+        }
+
+        private void getChoice2(ChoiceBox<String> sort){
+            String type= sort.getValue();//gets the sort selection
+            if(type== "new to old"){
+                recipeList.updateSorted1();
+            }
+            else if(type=="old to new"){
+                recipeList.updateSorted2();
+            }
+            else if(type== "alphabetical"){
+                recipeList.updateSorted3();
+            }
+            else{//reverse alphabetical
+                recipeList.updateSorted4();
+            }
         }
 
         public Button getAddButton() {
@@ -546,6 +569,22 @@ public class View{
                     recipeList.getChildren().add(r);
                 }
             }
+        }
+
+        public void updateSorted1(){
+
+            //Collections.sort(recipeList.getRecipes());
+        }
+        public void updateSorted2(){
+            //Collections.sort(recipeList);
+        }
+        public void updateSorted3(){//alphabetical order sorting
+            //Comparator<String> comp=Comparator.comparing(String:: getRecipie.getRecipeLabelName())
+
+            //Collections.sort(recipeList);
+        }
+        public void updateSorted4(){//reverse alphabetical order sorting
+            //Collections.sort(recipeList);
         }
 
     }
