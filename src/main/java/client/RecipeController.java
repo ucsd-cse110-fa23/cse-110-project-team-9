@@ -3,7 +3,10 @@ package client;
 import org.bson.json.JsonObject;
 
 import client.View.RecipeList;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
+
+import org.json.JSONObject;
 
 
 public class RecipeController {
@@ -34,19 +37,35 @@ public class RecipeController {
     private void handleGetButton(ActionEvent event) {
         Recipe curr = this.recipe;
         
-        System.out.print("ID: " + recipe.getID());
-        String response = model.performRequest("GET", null, null, recipe.getID());
-        System.out.print("GET RESPONSE: " + response);
-/* 
-        String name = response.substring(0,response.indexOf("!"));
-        String type = response.substring(response.indexOf("!") + 1, response.indexOf("="));
-        String details = response.substring(response.indexOf("=") + 1);
+        String response = model.performRequest("GET", null, null, recipe.getQueryRecipeLabelName());
+        curr.getID();
+        System.out.println(recipe.getQueryRecipeLabelName());
+        //System.out.print("GET RESPONSE: " + response);
+ 
+       
+        final String name;
+        final String type;
+        final String details;
 
-
-        recipe.setRecipeName(name);
-        recipe.setRecipeTotal(details);
-        recipe.setRecipeType(type);
-        recipe.getDetailedView().getStage().show();
+        
+        JSONObject jsonObject = new JSONObject(response);
+        String id = jsonObject.getString("_id");
+        name = jsonObject.getString("name");
+        type = jsonObject.getString("type");
+        details = jsonObject.getString("details");
+        /*
+        System.out.println("ID: " + id);
+        System.out.println("Name: " + name);
+        System.out.println("Type: " + type);
+        System.out.println("Details: " + details);
         */
+
+        Platform.runLater(() -> {
+            recipe.setRecipeName(name);
+            recipe.setRecipeTotal(details);
+            recipe.setRecipeText(details);
+            recipe.setRecipeType(type);
+            recipe.getDetailedView().getStage().show();
+        });
     }
 }

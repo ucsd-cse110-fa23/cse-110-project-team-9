@@ -92,11 +92,11 @@ public class RequestHandler implements HttpHandler {
         // String[] typeAndDetails = new String[]{type, details};
         // data.put(name, typeAndDetails);
         String id = new ObjectId().toString();
+        String query = name.replace(" ", "-");
         Document recipe = new Document("_id", id);
         recipe.append("name", name)
                 .append("type", type)
                 .append("details", details);
-
         recipesCollection.insertOne(recipe);
 
         System.out.println(id + data.toString());
@@ -106,20 +106,27 @@ public class RequestHandler implements HttpHandler {
     }
 
     private String handleGet(HttpExchange httpExchange) throws IOException {
-        String response = "Invalid GET request";
+        String response = "default";
+       // InputStream inStream = httpExchange.getRequestBody();
+       // Scanner scanner = new Scanner(inStream);
+        //String postData = scanner.nextLine();
+       // String name = postData;
+       // System.out.println(result);
+        
         URI uri = httpExchange.getRequestURI();
+
         String query = uri.getRawQuery();
-        response = "";
-        String id = query.substring(query.indexOf("=") + 1);
-        Document recipe = recipesCollection.find(eq("_id", id)).first();
-        if (recipe == null) {
-            return "Can't find recipe";
+        if (query != null) {
+            String value = query.substring(query.indexOf("=") + 1);
+            value = value.replace("-", " ");
+            //Bson filter = eq("name", value);
+            Document rec = recipesCollection.find(eq("name", value)).first();
+            //DeleteResult result = recipesCollection.deleteOne(filter);
+            response =  rec.toJson();
+            //System.out.println(result);
+            return response;
         }
-        response += recipe.getString("name") + "!" + recipe.getString("type") + "="
-        + recipe.getString("details") + "";
-
         return response;
-
     }
 
     private String handleDelete(HttpExchange httpExchange) throws IOException {
@@ -136,12 +143,10 @@ public class RequestHandler implements HttpHandler {
         if (query != null) {
             String value = query.substring(query.indexOf("=") + 1);
             value = value.replace("-", " ");
-        
-         
-        Bson filter = eq("name", value);
-        DeleteResult result = recipesCollection.deleteOne(filter);
-        response = "deleted" + filter.toString();
-        System.out.println(result);
+            Bson filter = eq("name", value);
+            DeleteResult result = recipesCollection.deleteOne(filter);
+            response = "deleted" + filter.toString();
+            System.out.println(result);
         }
         return response;
     }

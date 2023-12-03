@@ -155,6 +155,7 @@ class ChatGPT {
         String title = "";
         String delimiter = "Ingredients"; // Use "\n" as the delimiter
         title = result.replace("\n", "");
+        title = title.replace("-", " ");
         int delimiterindex = title.indexOf(delimiter);
         if (delimiterindex != -1) {
             title = title.substring(0, delimiterindex);
@@ -320,10 +321,6 @@ class Recipe extends HBox {
         deleteButton.setStyle(
                 "-fx-background-color: #FFA9A9; -fx-border-width: 0; -fx-border-color: #8B0000; -fx-font-weight: bold");
         this.getChildren().add(deleteButton);
-
-
-        
-
         detailedView = new Button("Detailed View");
         detailedView.setStyle(defaultButtonStyle);
         detailedView.setAlignment(Pos.CENTER_RIGHT);
@@ -333,20 +330,11 @@ class Recipe extends HBox {
         recipeLabel.setTextAlignment(TextAlignment.CENTER);
 
         this.getChildren().addAll(recipeLabel, detailedView);
-        currDetailedView = new DetailedView(this);
+        currDetailedView = new DetailedView(this, this.getRecipeTotal());
         Model model = new Model();
         detailedController = new DetailedController(currDetailedView, model);
         recipeController = new RecipeController(this, model);
-        //currDetailedView.getStage().show();
-        
-            
-     //   detailedView.setOnAction(e -> {
-            
-      //  });
-
-    
     }
-
 
     public String getID(){
         return id;
@@ -400,12 +388,17 @@ class Recipe extends HBox {
         recipeLabel.setText(newRecipe);
     }
 
-    public void setRecipeTotal(String recipe) {
-        recipeTotal = recipe;// put entire recipe in string
+    public void setRecipeTotal(String therecipe) {
+        recipeTotal = therecipe; // put entire recipe in string
+        // Now that the recipeTotal is set, initialize the DetailedView IMPORTANT
+        currDetailedView = new DetailedView(this, this.getRecipeTotal());
     }
 
     public String getRecipeTotal() {
         return recipeTotal;
+    }
+    public void setRecipeText(String newText) {
+        setRecipeTotal(newText);
     }
     
     public void setDeleteButtonAction(EventHandler<ActionEvent> eventHandler) {
