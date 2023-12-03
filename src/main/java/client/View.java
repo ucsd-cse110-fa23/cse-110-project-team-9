@@ -423,6 +423,12 @@ public class View{
         }
 
         private void getChoice(ChoiceBox<String> filters){
+            
+            String type = filters.getValue();// gets the type meal type to filter for
+            recipeList.setFilter(type);
+            recipeList.updateRecipeListView();
+            
+            /* 
             String type= filters.getValue();//gets the type meal type to filter for
                 if(type== "Breakfast"){
                     recipeList.updateFilteredBreakfast();
@@ -436,6 +442,7 @@ public class View{
                 else{
                     recipeList.updateRecipeListView();
                 }
+            */
         }
 
         private void getChoice2(ChoiceBox<String> sort){
@@ -481,6 +488,8 @@ public class View{
 
         private List<InvalidationListener> listeners;
         private ObservableList<Recipe> recipes;
+        private String filterType = "All";
+
         RecipeList() {
 
             uri = "mongodb+srv://admin:123@cluster0.cp02bnz.mongodb.net/?retryWrites=true&w=majority";
@@ -505,17 +514,52 @@ public class View{
         public void fetchRecipesFromMongoDB() {
             List<Document> recipeDocuments = recipesCollection.find().into(new ArrayList<>());
             Platform.runLater(() -> {
-                recipes.clear(); 
-                for (Document document : recipeDocuments) {
-                    Recipe recipe = new Recipe();
-                    recipe.setRecipeName(document.getString("name"));
-                    recipe.setRecipeType(document.getString("type"));
-                    recipe.setRecipeTotal(document.getString("total"));
-                    recipes.add(recipe);
+                recipes.clear();
+
+                if (filterType.compareTo("All") == 0) {
+                    for (Document document : recipeDocuments) {
+                        Recipe recipe = new Recipe();
+                        recipe.setRecipeName(document.getString("name"));
+                        recipe.setRecipeType(document.getString("type"));
+                        recipe.setRecipeTotal(document.getString("total"));
+                        recipes.add(recipe);
+                    }
+                } else if (filterType.compareTo("Breakfast") == 0) {
+                    for (Document document : recipeDocuments) {
+                        if (document.getString("type").compareTo("Breakfast") == 0) {
+                            Recipe recipe = new Recipe();
+                            recipe.setRecipeName(document.getString("name"));
+                            recipe.setRecipeType(document.getString("type"));
+                            recipe.setRecipeTotal(document.getString("total"));
+                            recipes.add(recipe);
+                        }
+                    }
+                } else if (filterType.compareTo("Lunch") == 0) {
+                    for (Document document : recipeDocuments) {
+                        if (document.getString("type").compareTo("Lunch") == 0) {
+                            Recipe recipe = new Recipe();
+                            recipe.setRecipeName(document.getString("name"));
+                            recipe.setRecipeType(document.getString("type"));
+                            recipe.setRecipeTotal(document.getString("total"));
+                            recipes.add(recipe);
+                        }
+                    }
+                } else if (filterType.compareTo("Dinner") == 0) {
+                    for (Document document : recipeDocuments) {
+                        if (document.getString("type").compareTo("Dinner") == 0) {
+                            Recipe recipe = new Recipe();
+                            recipe.setRecipeName(document.getString("name"));
+                            recipe.setRecipeType(document.getString("type"));
+                            recipe.setRecipeTotal(document.getString("total"));
+                            recipes.add(recipe);
+                        }
+                    }
                 }
+
                 notifyListeners();
             });
         }
+
         private void notifyListeners() {
             for (InvalidationListener listener : listeners) {
                 listener.invalidated(this);
@@ -535,11 +579,43 @@ public class View{
         public void addRecipe(Recipe recipe) {
             getChildren().add(recipe);
         }
-        public void updateRecipeListView() {
-            recipeList.getChildren().clear(); 
-            recipeList.getChildren().addAll(recipeList.getRecipes()); 
-        }
 
+        public void setFilter(String newFilter) {
+            filterType = newFilter;
+        }
+        
+        public void updateRecipeListView() {
+            if (filterType.compareTo("All") == 0) {
+                recipeList.getChildren().clear();
+                recipeList.getChildren().addAll(recipeList.getRecipes());
+            } else if (filterType.compareTo("Breakfast") == 0) {
+                RecipeList copy = recipeList;
+                recipeList.getChildren().clear();
+                for (Recipe r : copy.getRecipes()) {
+                    if (r.getRecipeType().contains("Breakfast")) {
+                        recipeList.getChildren().add(r);
+                    }
+                }
+            } else if (filterType.compareTo("Lunch") == 0) {
+                RecipeList copy = recipeList;
+                recipeList.getChildren().clear();
+                for (Recipe r : copy.getRecipes()) {
+                    if (r.getRecipeType().contains("Lunch")) {
+                        recipeList.getChildren().add(r);
+                    }
+                }
+            } else if (filterType.compareTo("Dinner") == 0) {
+                RecipeList copy = recipeList;
+                recipeList.getChildren().clear();
+                for (Recipe r : copy.getRecipes()) {
+                    if (r.getRecipeType().contains("Dinner")) {
+                        recipeList.getChildren().add(r);
+                    }
+                }
+            }
+
+        }
+/* 
         public void updateFilteredBreakfast(){
             RecipeList copy= recipeList;
             recipeList.getChildren().clear(); 
@@ -570,7 +646,7 @@ public class View{
                 }
             }
         }
-
+*/
         public void updateSorted1(){
 
             //Collections.sort(recipeList.getRecipes());
