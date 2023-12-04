@@ -15,6 +15,12 @@ import java.net.http.HttpResponse;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import com.mongodb.client.ChangeStreamIterable;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+
 import org.json.JSONException;
 
 import java.io.*;
@@ -24,11 +30,14 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Modality;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.Observable;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.control.Label;
@@ -39,7 +48,32 @@ import java.io.*;
 import java.rmi.RMISecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+
 import javax.sound.sampled.*;
+import javafx.beans.InvalidationListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import org.bson.Document;
+
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.set;
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Projections.*;
+
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.MongoException;
+import com.mongodb.ServerApi;
+import com.mongodb.ServerApiVersion;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.changestream.ChangeStreamDocument;
+import com.mongodb.client.result.DeleteResult;
+
 
 public class View{
 
@@ -47,17 +81,13 @@ public class View{
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
     private Label recordingLabel;
-<<<<<<< Updated upstream
-    private RecipeList recipeList;
-=======
     private static RecipeList recipeList;
-    private String user;
->>>>>>> Stashed changes
 
     private Recipe currRecipe;
 
     private Button saveButton;
     private Button addButton;
+    private String user;
 
     public String getUser() {
         return user;
@@ -69,26 +99,21 @@ public class View{
     public Stage getAppFrame(){
         return appFrame;
     }
-
     public Recipe getRecipe(){
         return currRecipe;
     }
     public String getRecipeText(){
         return currRecipe.getRecipeTotal();
     }
-
     public String getRecipeType(){
         return currRecipe.getRecipeType();
     }
-
     public String getRecipeName(){
         return currRecipe.getRecipeLabelName();
     }
-
     public RecipeList getRecipeList(){
         return recipeList;
     }
-
     public void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -108,6 +133,7 @@ public class View{
         appFrame.setScene(mainScene);
         saveButton = new Button("Save Recipe");
     }
+
 
     private BorderPane createMainLayout() {
         BorderPane root = new BorderPane();
@@ -186,15 +212,6 @@ public class View{
 
         Button closeButton = new Button("Back");
         closeButton.setOnAction(e -> popupStage.close());
-<<<<<<< Updated upstream
-
-
-        /* 
-        recipe.getDeleteButton().setOnAction(e -> {
-            recipeList.deleteRecipe(recipe);
-        });
-        */
-        
         /* 
         saveButton.setOnAction(e -> {
             recipe.setRecipeName(ChatGPT.returnPrompt());
@@ -203,7 +220,7 @@ public class View{
             popupStage.close();
         });
         */
-=======
+
         Button refreshButton = new Button("Regenerate Recipe");
         // refreshButton.setStyle(defaultButtonStyle);
         refreshButton.setOnAction(e -> {
@@ -215,7 +232,6 @@ public class View{
             recipeText.setVisible(true);
         });
 
->>>>>>> Stashed changes
 
         BorderPane popupLayout = new BorderPane();
         Scene popupScene = new Scene(popupLayout, 600, 600);
@@ -252,7 +268,7 @@ public class View{
         popupLayout.setCenter(scroller);
 
         HBox bottomBox = new HBox();
-        bottomBox.getChildren().addAll(closeButton, saveButton);
+        bottomBox.getChildren().addAll(refreshButton, closeButton, saveButton);
         bottomBox.setAlignment(Pos.CENTER);
         bottomBox.setSpacing(5);
         popupLayout.setBottom(bottomBox);
@@ -263,14 +279,10 @@ public class View{
     public void setSaveButtonAction(EventHandler<ActionEvent> eventHandler) {
         saveButton.setOnAction(eventHandler);
     }
-<<<<<<< Updated upstream
-=======
-    /*
+
     public void setDeleteButtonAction(EventHandler<ActionEvent> eventHandler) {
         currRecipe.getDeleteButton().setOnAction(eventHandler);
     }
-    */
->>>>>>> Stashed changes
 
     private void audioToText() {
         String[] args = new String[] { "recording.wav" };
@@ -372,6 +384,8 @@ public class View{
     class Footer extends HBox {
 
         private Button addButton;
+        private ChoiceBox<String> filter = new ChoiceBox<>();
+        private ChoiceBox<String> sorter= new ChoiceBox<>();
 
         Footer() {
             this.setPrefSize(500, 60);
@@ -388,8 +402,45 @@ public class View{
                 openPopup();
             });
 
-            this.getChildren().addAll(addButton);
+            filter.getItems().addAll("All", "Breakfast", "Lunch", "Dinner");//dropdown of filter button
+            filter.setValue("All");//defualt filtering
+
+            Button filterButton= new Button("Filter");
+            filterButton.setOnAction(e-> getFilterChoice(filter));
+
+            sorter.getItems().addAll("New to Old", "Old to New", "Alphabetical", "Reverse Alphabetical");
+            sorter.setValue("old to new");
+
+            Button sorterButton= new Button("Sort");
+            sorterButton.setOnAction(e -> getSortChoice(sorter));
+
+            this.getChildren().addAll(addButton, filter, filterButton , sorter, sorterButton);
             this.setAlignment(Pos.CENTER); // aligning the buttons to center
+        
+        }
+        
+        private void getFilterChoice(ChoiceBox<String> filters){
+            
+            String type = filters.getValue();// gets the type meal type to filter for
+            recipeList.setFilter(type);
+            //recipeList.updateRecipeListView();
+
+        }
+
+        private void getSortChoice(ChoiceBox<String> sort){
+            String type= sort.getValue();//gets the sort selection
+            if(type== "New to Old"){
+                //recipeList.updateSorted1();
+            }
+            else if(type=="Old to New"){
+                //recipeList.updateSorted2();
+            }
+            else if(type== "Alphabetical"){
+                //recipeList.updateSorted3();
+            }
+            else if (type == "Reverse Alphabetical" ){//reverse alphabetical
+                //recipeList.updateSorted4();
+            }
         }
 
         public Button getAddButton() {
@@ -409,12 +460,9 @@ public class View{
             this.setAlignment(Pos.CENTER); // Align the text to the Center
         }
     }
+    
+    public class RecipeList extends VBox implements Observable {
 
-<<<<<<< Updated upstream
-    class RecipeList extends VBox {
-
-        RecipeList() {
-=======
         MongoCollection<Document> recipesCollection;
         MongoDatabase recipe_db;
         String uri;
@@ -428,18 +476,21 @@ public class View{
         RecipeList(String user) {
 
             this.user = user;
-
             uri = "mongodb+srv://admin:123@cluster0.cp02bnz.mongodb.net/?retryWrites=true&w=majority";
->>>>>>> Stashed changes
             this.setSpacing(3); // sets spacing between recipes
             this.setPrefSize(500, 560);
             this.setStyle("-fx-background-color: #F0F8FF;");
-        }
 
+            listeners = new ArrayList<>();
+            mongoClient = MongoClients.create(uri);
+            recipe_db = mongoClient.getDatabase("recipe_db");
+            recipesCollection = recipe_db.getCollection("recipes");
+
+            recipes = FXCollections.observableArrayList();
+            fetchRecipesFromMongoDB();
+        }
+        
         public void deleteRecipe(Recipe recipe) {
-<<<<<<< Updated upstream
-            this.getChildren().remove(recipe);
-=======
             recipesCollection.deleteOne(eq("name", recipe.getRecipeLabelName()));
             notifyListeners();
         }
@@ -546,8 +597,6 @@ public class View{
                 }
             }
 
->>>>>>> Stashed changes
         }
     }
-
-}
+} 

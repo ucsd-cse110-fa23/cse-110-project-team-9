@@ -25,14 +25,20 @@ public class DetailedView {
     private TextArea recipeAsText;
     private Recipe recipe;
     private Button closeButton;
+    private String recipeText;
 
-    public DetailedView(Recipe inputRecipe) {
+    public DetailedView(Recipe inputRecipe, String recipeString) {
         stage = new Stage();
         recipe = inputRecipe;
         stage.setTitle("Detailed View");
-        BorderPane mainLayout = createMainLayout(inputRecipe.getRecipeTotal(), recipe);
+        recipeText = recipe.getRecipeTotal();  // Initialize recipeText with the recipe's total
+        BorderPane mainLayout = createMainLayout(recipe, recipeString);
         Scene detailedScene = new Scene(mainLayout, 600, 600);
         stage.setScene(detailedScene);
+    }
+
+    public void setRecipeTotal(String total){
+        recipeText = total;
     }
 
     public TextArea getRecipeAsText(){
@@ -59,10 +65,6 @@ public class DetailedView {
         return recipe.getRecipeTotal();
     }
 
-    public void setRecipeTotal(String total){
-        recipeText = total;
-    }
-
     public void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -71,13 +73,13 @@ public class DetailedView {
         alert.showAndWait();
     }
 
-    private BorderPane createMainLayout(String recipeText, Recipe recipe) {
+    private BorderPane createMainLayout(Recipe recipe, String totalRecipe) {
         BorderPane root = new BorderPane();
 
         DVHeader header = new DVHeader();
         DVFooter footer = new DVFooter(recipe);
 
-        recipeAsText = new TextArea(recipeText);// create editable text area
+        recipeAsText = new TextArea(totalRecipe);// create editable text area
         recipeAsText.setEditable(false);
         ScrollPane scroll = new ScrollPane(recipeAsText);
         scroll.setFitToWidth(true);
@@ -144,24 +146,13 @@ public class DetailedView {
              * });
              */
             closeButton = new Button("Save and Close Detailed View");
-<<<<<<< Updated upstream
-            /* 
-=======
-             /*
->>>>>>> Stashed changes
+             
             closeButton.setOnAction(e -> {
                 recipeAsText.setEditable(false);
                 recipe.setRecipeTotal(recipeAsText.getText());
                 stage.close();
-<<<<<<< Updated upstream
             });// add method to delete the recipe as a whole
-            */
-=======
-            });
-            */
-            // add method to delete the recipe as a whole
             
->>>>>>> Stashed changes
 
             closeButton.setStyle("-fx-font-weight: bold; -fx-font-size: 20");
 

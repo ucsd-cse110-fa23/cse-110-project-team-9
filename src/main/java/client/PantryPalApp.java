@@ -15,6 +15,9 @@ import java.net.http.HttpResponse;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import client.View.RecipeList;
+
 import org.json.JSONException;
 
 import java.io.*;
@@ -22,6 +25,7 @@ import java.net.*;
 import org.json.*;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
@@ -54,7 +58,6 @@ public class PantryPalApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         // RecipeController recipeController = new RecipeController(primaryStage);
-
         LoginView view = new LoginView();
         Model model = new Model();
         LoginController controller = new LoginController(view, model, primaryStage);
@@ -63,36 +66,6 @@ public class PantryPalApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("MyServerUI");
         primaryStage.show();
-
-        /* 
-        View view = new View(primaryStage);
-        Model model = new Model();
-<<<<<<< Updated upstream
-        Controller controller = new Controller(view, model); // Show the main stage
-        
-        view.getAppFrame().show();
     }
-}
-=======
-        Controller controller = new Controller(view, model);
-        view.getAppFrame().show();
-        new Thread(() -> {
-            while (true) {
-                try {
-                    view.getRecipeList().fetchRecipesFromMongoDB();
-    
-                    Platform.runLater(() -> {
-                        view.getRecipeList().updateRecipeListView();
-                    });
-                    Thread.sleep(2500); //sleep time
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-        */
-    }
-    
 
     }
->>>>>>> Stashed changes

@@ -14,7 +14,6 @@ public class DetailedController {
     }
 
     private void handlePutButton(ActionEvent event) {
-
         view.setRecipeTotal(view.getRecipeAsText().getText());
         view.getRecipeAsText().setEditable(false);
         view.getStage().close();
@@ -25,7 +24,5 @@ public class DetailedController {
         String response = model.performRequest("PUT", ID, typeAndRecipe, null);
 
         System.out.print("DetailedController response: " + response);
-
-        //view.showAlert("Response", response);
     }
 }

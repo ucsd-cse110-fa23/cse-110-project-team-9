@@ -59,28 +59,18 @@ public class Model {
 
         try {
             String urlString = "http://localhost:8100/";
-            /*
-            if (query != null && name != null) {
-                urlString += "?=" + name + query;
-            }
-            */
             if (query != null) {
                 urlString += "?=" + query;
             }
-            URL url = new URI(urlString).toURL();
+            URL url = new URI(urlString).toURL(); //error here bcuz of not refactoring query - fix at recipe controller 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod(method);
             conn.setDoOutput(true);
 
             if (method.equals("POST") || method.equals("PUT")) {
                 OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-<<<<<<< Updated upstream
-                out.write("temporary name" + "!" + typeAndDetails[0] + "=" + typeAndDetails[1]);
-=======
                 out.write(name + "!" + typeAndDetails[0] + "$" + typeAndDetails[1] + "=" + typeAndDetails[2]);
                 //name ! type $ user = details
->>>>>>> Stashed changes
-                //System.out.print("temporary name" + "!" + typeAndDetails[0] + "=" + typeAndDetails[1]);
                 out.flush();
                 out.close();
             }
@@ -165,6 +155,7 @@ class ChatGPT {
         String title = "";
         String delimiter = "Ingredients"; // Use "\n" as the delimiter
         title = result.replace("\n", "");
+        title = title.replace("-", " ");
         int delimiterindex = title.indexOf(delimiter);
         if (delimiterindex != -1) {
             title = title.substring(0, delimiterindex);
@@ -303,19 +294,57 @@ class Whisper {
 
 }
 
+class MockChatGPT extends ChatGPT{
+        private static String resultRecipe;
+        private static String resultMealType;
+
+        public void setResult(String mealType, String ingrediants){
+            if (mealType == "breakfast"){
+                resultRecipe = "A breakfast recipe with " + ingrediants;
+            }
+            else if (mealType == "lunch"){
+                resultRecipe = "A lunch recipe with " + ingrediants;
+            }
+            else if (mealType == "dinner"){
+                resultRecipe = "A dinner recipe with " + ingrediants;
+            }
+            else{
+                resultRecipe = "random recipe with " + ingrediants;
+            }
+            resultMealType = mealType;
+        }
+
+        public String getResultRecipe() {
+            return resultRecipe;
+        }
+
+        public String getMealType(){
+            return resultMealType;
+        }
+    }
+
+class MockWhisper extends Whisper{
+    private static String result1;
+    private static String result2;
+    public static void main(String[] args) throws IOException, URISyntaxException {
+        result1 = "Ingredients";
+        result2 = "Meal Type";
+    }
+}
+
 class Recipe extends HBox {
 
     private Button deleteButton;
     private Button detailedView;
     private Label recipeLabel;
     private String recipeTotal;
-    private String recipeType;
+    private Label recipeType;
     private String id;
-    private String user;
 
     private DetailedView currDetailedView;
     private DetailedController detailedController;
     private RecipeController recipeController;
+    private String user;
 
     String defaultButtonStyle = "-fx-border-color: #000000; -fx-font: 12 arial; -fx-pref-height: 30px;";
     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-height: 30px; -fx-text-fill: black;";
@@ -331,7 +360,6 @@ class Recipe extends HBox {
         deleteButton.setStyle(
                 "-fx-background-color: #FFA9A9; -fx-border-width: 0; -fx-border-color: #8B0000; -fx-font-weight: bold");
         this.getChildren().add(deleteButton);
-
         detailedView = new Button("Detailed View");
         detailedView.setStyle(defaultButtonStyle);
         detailedView.setAlignment(Pos.CENTER_RIGHT);
@@ -340,28 +368,17 @@ class Recipe extends HBox {
         recipeLabel.setStyle(defaultLabelStyle);
         recipeLabel.setTextAlignment(TextAlignment.CENTER);
 
-        this.getChildren().addAll(recipeLabel, detailedView);
-        currDetailedView = new DetailedView(this);
+        recipeType = new Label("Recipe Type: NONE");
+        recipeType.setStyle("-fx-background-color: #BCEAD5; -fx-border-width: 1; -fx-border-color: #BCEAD5; -fx-font-weight: bold; -fx-pref-height: 30px");
+        recipeType.setTextAlignment(TextAlignment.CENTER);
+
+        this.getChildren().addAll(recipeType, recipeLabel, detailedView);
+        currDetailedView = new DetailedView(this, this.getRecipeTotal());
         Model model = new Model();
         detailedController = new DetailedController(currDetailedView, model);
         recipeController = new RecipeController(this, model);
-        //currDetailedView.getStage().show();
-
-
-        /*
-        deleteButton.setOnAction(e -> {
-            Controller.handleDeleteButton(e);
-        });
-
-        detailedView.setOnAction(e -> {
-            
-        });
-         */
-        
     }
 
-<<<<<<< Updated upstream
-=======
     public String getUser() {
         return user;
     }
@@ -369,7 +386,6 @@ class Recipe extends HBox {
     public void setUser(String user) {
         this.user = user;
     }
->>>>>>> Stashed changes
 
     public String getID(){
         return id;
@@ -378,6 +394,7 @@ class Recipe extends HBox {
     public void setID(String id){
         this.id = id;
     }
+
 
     public DetailedView getDetailedView(){
         return currDetailedView;
@@ -394,29 +411,58 @@ class Recipe extends HBox {
     public Button getDeleteButton() {
         return deleteButton;
     }
+    
 
     public String getRecipeLabelName() {
         return recipeLabel.getText();
     }
+    // this will fix the query error for delete
+    public String getQueryRecipeLabelName(){
+        String formattedName;
+        String base = recipeLabel.getText();
+
+        formattedName = base.replace(' ', '-');
+
+        return formattedName;
+
+    }
 
     public String getRecipeType() {
-        return recipeType;
+        return recipeType.getText();
     }
 
     public void setRecipeType(String type) {
-        recipeType = type;
+        //Run this line only if trying to test meal type tag without microphone working (Meal type registers anything other than breakfast, lunch, dinner)
+        //recipeType.setText(type);
+
+        if(type.toLowerCase().contains("breakfast")) {
+            recipeType.setText("Breakfast");
+        } else if (type.toLowerCase().contains("lunch")) {
+            recipeType.setText("Lunch");
+        } else if (type.toLowerCase().contains("dinner")) {
+            recipeType.setText("Dinner"); 
+        } else {
+            return;
+        }
+        //recipeType.setVisible(true);
+        //this.getChildren().add(1, recipeType);
     }
 
     public void setRecipeName(String newRecipe) {// set title of recipe
         recipeLabel.setText(newRecipe);
     }
 
-    public void setRecipeTotal(String recipe) {
-        recipeTotal = recipe;// put entire recipe in string
+    public void setRecipeTotal(String therecipe) {
+        recipeTotal = therecipe; // put entire recipe in string
+        // Now that the recipeTotal is set, initialize the DetailedView IMPORTANT
+        currDetailedView = new DetailedView(this, this.getRecipeTotal());
     }
 
     public String getRecipeTotal() {
         return recipeTotal;
+    }
+    public void setRecipeText(String newText) {
+        setRecipeTotal(newText);
     }
     
     public void setDeleteButtonAction(EventHandler<ActionEvent> eventHandler) {

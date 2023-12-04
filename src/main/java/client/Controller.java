@@ -1,45 +1,35 @@
 package client;
 
-<<<<<<< Updated upstream
 import client.View.RecipeList;
-=======
 import javafx.application.Platform;
->>>>>>> Stashed changes
 import javafx.event.ActionEvent;
 
 public class Controller {
-    private View view;
-    private Model model;
+    private static View view;
+    private static Model model;
 
     public Controller(View view, Model model) {
         this.view = view;
         this.model = model;
         
         this.view.setSaveButtonAction(this::handlePostButton);
-<<<<<<< Updated upstream
-=======
-        //this.view.setDeleteButtonAction(this::handleDeleteButton);
->>>>>>> Stashed changes
+        this.view.setDeleteButtonAction(this::handleDeleteButton);
     }
 
     private void handlePostButton(ActionEvent event) {
+        //name ! type $ user = details
         Recipe curr = view.getRecipe();
-        System.out.print("curr.getRecipeType: " + curr.getRecipeType());
         curr.setRecipeName(view.getRecipeName());
         curr.setRecipeType(view.getRecipeType());
-        curr.setUser(view.getUser());
-        String[] typeAndRecipe = new String[]{curr.getRecipeType().substring(13), curr.getUser(), curr.getRecipeTotal()};
-        String response = model.performRequest("POST", curr.getRecipeLabelName(), typeAndRecipe, null);
+        String[] typeAndRecipe = new String[]{curr.getRecipeType().substring(13), view.getUser(), curr.getRecipeTotal()};
+        String response = model.performRequest("POST", curr.getQueryRecipeLabelName(), typeAndRecipe, null);
         curr.setID(response);
-        //pinging to server
+        
         System.out.print("POST RESPONSE: " + response);
-<<<<<<< Updated upstream
-        view.getRecipeList().getChildren().add(curr);
-        //view.showAlert("Response", response);
-=======
         
         new Thread(() -> {
             view.getRecipeList().fetchRecipesFromMongoDB();
+
             
             Platform.runLater(() -> {
                 view.getRecipeList().updateRecipeListView();
@@ -64,6 +54,5 @@ public class Controller {
             });
         }).start();
 
->>>>>>> Stashed changes
     }
 }
