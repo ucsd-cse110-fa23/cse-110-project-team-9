@@ -1,4 +1,4 @@
-/* 
+
 package client;
 
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,8 @@ public class AppFrameTest {
         String b = "apple";
         assertEquals(a,b);
     }
-
+}
+/* 
     @Test
     void RecipeCreateNameTest(){//recipe named correctly
         
@@ -167,6 +168,8 @@ public class AppFrameTest {
         }
         
     }
+}
+*/
 /* 
     @Test
     void detailViewTest(){
