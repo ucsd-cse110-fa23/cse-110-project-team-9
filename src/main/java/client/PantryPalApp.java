@@ -54,10 +54,45 @@ public class PantryPalApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         // RecipeController recipeController = new RecipeController(primaryStage);
+
+        LoginView view = new LoginView();
+        Model model = new Model();
+        LoginController controller = new LoginController(view, model, primaryStage);
+
+        Scene scene = new Scene(view.getGrid(), 400, 200);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("MyServerUI");
+        primaryStage.show();
+
+        /* 
         View view = new View(primaryStage);
         Model model = new Model();
+<<<<<<< Updated upstream
         Controller controller = new Controller(view, model); // Show the main stage
         
         view.getAppFrame().show();
     }
 }
+=======
+        Controller controller = new Controller(view, model);
+        view.getAppFrame().show();
+        new Thread(() -> {
+            while (true) {
+                try {
+                    view.getRecipeList().fetchRecipesFromMongoDB();
+    
+                    Platform.runLater(() -> {
+                        view.getRecipeList().updateRecipeListView();
+                    });
+                    Thread.sleep(2500); //sleep time
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        */
+    }
+    
+
+    }
+>>>>>>> Stashed changes

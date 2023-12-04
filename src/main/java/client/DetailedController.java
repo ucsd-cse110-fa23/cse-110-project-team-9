@@ -14,18 +14,18 @@ public class DetailedController {
     }
 
     private void handlePutButton(ActionEvent event) {
-        String name = view.getRecipeName();
-        String[] typeAndRecipe = new String[]{view.getRecipeType(), view.getRecipeTotal()};
-        String response = model.performRequest("POST", name, typeAndRecipe, null);
-        Recipe curr = view.getRecipe();
-        curr.setRecipeName(name);
-        curr.setRecipeTotal(typeAndRecipe[1]);
-        curr.setRecipeType(typeAndRecipe[0]);
 
+        view.setRecipeTotal(view.getRecipeAsText().getText());
         view.getRecipeAsText().setEditable(false);
-        view.getRecipe().setRecipeTotal(view.getRecipeAsText().getText());
         view.getStage().close();
 
-        view.showAlert("Response", response);
+        String ID = view.getRecipe().getID();
+        System.out.print("ID: " + ID);
+        String[] typeAndRecipe = new String[]{view.getRecipeType(), view.getRecipe().getUser(), view.getRecipeAsText().getText()};
+        String response = model.performRequest("PUT", ID, typeAndRecipe, null);
+
+        System.out.print("DetailedController response: " + response);
+
+        //view.showAlert("Response", response);
     }
 }

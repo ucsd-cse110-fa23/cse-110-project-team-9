@@ -47,12 +47,24 @@ public class View{
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
     private Label recordingLabel;
+<<<<<<< Updated upstream
     private RecipeList recipeList;
+=======
+    private static RecipeList recipeList;
+    private String user;
+>>>>>>> Stashed changes
 
     private Recipe currRecipe;
 
     private Button saveButton;
     private Button addButton;
+
+    public String getUser() {
+        return user;
+    }
+    public void setUser(String user) {
+        this.user = user;
+    }
 
     public Stage getAppFrame(){
         return appFrame;
@@ -85,7 +97,8 @@ public class View{
         alert.showAndWait();
     }
 
-    public View(Stage stage) {
+    public View(Stage stage, String user) {
+        this.user = user;
         currRecipe = new Recipe();
         appFrame = stage;
         appFrame.setTitle("Recipe List View");
@@ -101,7 +114,7 @@ public class View{
 
         Header header = new Header();
         Footer footer = new Footer();
-        recipeList = new RecipeList();
+        recipeList = new RecipeList(user);
 
         ScrollPane scroll = new ScrollPane(recipeList);
         scroll.setFitToWidth(true);
@@ -173,6 +186,7 @@ public class View{
 
         Button closeButton = new Button("Back");
         closeButton.setOnAction(e -> popupStage.close());
+<<<<<<< Updated upstream
 
 
         /* 
@@ -189,6 +203,19 @@ public class View{
             popupStage.close();
         });
         */
+=======
+        Button refreshButton = new Button("Regenerate Recipe");
+        // refreshButton.setStyle(defaultButtonStyle);
+        refreshButton.setOnAction(e -> {
+            ingredientsToRecipe();
+            currRecipe.setRecipeName(ChatGPT.returnPrompt());
+            currRecipe.setRecipeTotal(ChatGPT.getResult());
+            String recipeLabel = "Recipe Preview: " + currRecipe.getRecipeTotal();
+            recipeText.setText(recipeLabel);
+            recipeText.setVisible(true);
+        });
+
+>>>>>>> Stashed changes
 
         BorderPane popupLayout = new BorderPane();
         Scene popupScene = new Scene(popupLayout, 600, 600);
@@ -236,6 +263,14 @@ public class View{
     public void setSaveButtonAction(EventHandler<ActionEvent> eventHandler) {
         saveButton.setOnAction(eventHandler);
     }
+<<<<<<< Updated upstream
+=======
+    /*
+    public void setDeleteButtonAction(EventHandler<ActionEvent> eventHandler) {
+        currRecipe.getDeleteButton().setOnAction(eventHandler);
+    }
+    */
+>>>>>>> Stashed changes
 
     private void audioToText() {
         String[] args = new String[] { "recording.wav" };
@@ -375,16 +410,143 @@ public class View{
         }
     }
 
+<<<<<<< Updated upstream
     class RecipeList extends VBox {
 
         RecipeList() {
+=======
+        MongoCollection<Document> recipesCollection;
+        MongoDatabase recipe_db;
+        String uri;
+        MongoClient mongoClient;
+        String user;
+
+        private List<InvalidationListener> listeners;
+        private ObservableList<Recipe> recipes;
+        private String filterType = "All";
+
+        RecipeList(String user) {
+
+            this.user = user;
+
+            uri = "mongodb+srv://admin:123@cluster0.cp02bnz.mongodb.net/?retryWrites=true&w=majority";
+>>>>>>> Stashed changes
             this.setSpacing(3); // sets spacing between recipes
             this.setPrefSize(500, 560);
             this.setStyle("-fx-background-color: #F0F8FF;");
         }
 
         public void deleteRecipe(Recipe recipe) {
+<<<<<<< Updated upstream
             this.getChildren().remove(recipe);
+=======
+            recipesCollection.deleteOne(eq("name", recipe.getRecipeLabelName()));
+            notifyListeners();
+        }
+
+        public void fetchRecipesFromMongoDB() {
+            List<Document> recipeDocuments = recipesCollection.find(eq("user", user)).into(new ArrayList<>());
+            Platform.runLater(() -> {
+                recipes.clear();
+
+                if (filterType.compareTo("All") == 0) {
+                    for (Document document : recipeDocuments) {
+                        Recipe recipe = new Recipe();
+                        recipe.setRecipeName(document.getString("name"));
+                        recipe.setRecipeType(document.getString("type"));
+                        recipe.setRecipeTotal(document.getString("total"));
+                        recipes.add(recipe);
+                    }
+                } else if (filterType.compareTo("Breakfast") == 0) {
+                    for (Document document : recipeDocuments) {
+                        if (document.getString("type").compareTo("Breakfast") == 0) {
+                            Recipe recipe = new Recipe();
+                            recipe.setRecipeName(document.getString("name"));
+                            recipe.setRecipeType(document.getString("type"));
+                            recipe.setRecipeTotal(document.getString("total"));
+                            recipes.add(recipe);
+                        }
+                    }
+                } else if (filterType.compareTo("Lunch") == 0) {
+                    for (Document document : recipeDocuments) {
+                        if (document.getString("type").compareTo("Lunch") == 0) {
+                            Recipe recipe = new Recipe();
+                            recipe.setRecipeName(document.getString("name"));
+                            recipe.setRecipeType(document.getString("type"));
+                            recipe.setRecipeTotal(document.getString("total"));
+                            recipes.add(recipe);
+                        }
+                    }
+                } else if (filterType.compareTo("Dinner") == 0) {
+                    for (Document document : recipeDocuments) {
+                        if (document.getString("type").compareTo("Dinner") == 0) {
+                            Recipe recipe = new Recipe();
+                            recipe.setRecipeName(document.getString("name"));
+                            recipe.setRecipeType(document.getString("type"));
+                            recipe.setRecipeTotal(document.getString("total"));
+                            recipes.add(recipe);
+                        }
+                    }
+                }
+
+                notifyListeners();
+            });
+        }
+
+        private void notifyListeners() {
+            for (InvalidationListener listener : listeners) {
+                listener.invalidated(this);
+            }
+        }
+        @Override
+        public void addListener(InvalidationListener listener) {
+            listeners.add(listener);
+        }
+        @Override
+        public void removeListener(InvalidationListener listener) {
+            listeners.remove(listener);
+        }
+        public ObservableList<Recipe> getRecipes() {
+            return recipes;
+        }
+        public void addRecipe(Recipe recipe) {
+            getChildren().add(recipe);
+        }
+        public void setFilter(String newFilter) {
+            filterType = newFilter;
+        }
+        
+        public void updateRecipeListView() {
+            if (filterType.compareTo("All") == 0) {
+                recipeList.getChildren().clear();
+                recipeList.getChildren().addAll(recipeList.getRecipes());
+            } else if (filterType.compareTo("Breakfast") == 0) {
+                RecipeList copy = recipeList;
+                recipeList.getChildren().clear();
+                for (Recipe r : copy.getRecipes()) {
+                    if (r.getRecipeType().contains("Breakfast")) {
+                        recipeList.getChildren().add(r);
+                    }
+                }
+            } else if (filterType.compareTo("Lunch") == 0) {
+                RecipeList copy = recipeList;
+                recipeList.getChildren().clear();
+                for (Recipe r : copy.getRecipes()) {
+                    if (r.getRecipeType().contains("Lunch")) {
+                        recipeList.getChildren().add(r);
+                    }
+                }
+            } else if (filterType.compareTo("Dinner") == 0) {
+                RecipeList copy = recipeList;
+                recipeList.getChildren().clear();
+                for (Recipe r : copy.getRecipes()) {
+                    if (r.getRecipeType().contains("Dinner")) {
+                        recipeList.getChildren().add(r);
+                    }
+                }
+            }
+
+>>>>>>> Stashed changes
         }
     }
 

@@ -59,6 +59,10 @@ public class DetailedView {
         return recipe.getRecipeTotal();
     }
 
+    public void setRecipeTotal(String total){
+        recipeText = total;
+    }
+
     public void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -140,13 +144,24 @@ public class DetailedView {
              * });
              */
             closeButton = new Button("Save and Close Detailed View");
+<<<<<<< Updated upstream
             /* 
+=======
+             /*
+>>>>>>> Stashed changes
             closeButton.setOnAction(e -> {
                 recipeAsText.setEditable(false);
                 recipe.setRecipeTotal(recipeAsText.getText());
                 stage.close();
+<<<<<<< Updated upstream
             });// add method to delete the recipe as a whole
             */
+=======
+            });
+            */
+            // add method to delete the recipe as a whole
+            
+>>>>>>> Stashed changes
 
             closeButton.setStyle("-fx-font-weight: bold; -fx-font-size: 20");
 

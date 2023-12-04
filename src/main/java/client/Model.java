@@ -59,6 +59,11 @@ public class Model {
 
         try {
             String urlString = "http://localhost:8100/";
+            /*
+            if (query != null && name != null) {
+                urlString += "?=" + name + query;
+            }
+            */
             if (query != null) {
                 urlString += "?=" + query;
             }
@@ -69,7 +74,12 @@ public class Model {
 
             if (method.equals("POST") || method.equals("PUT")) {
                 OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+<<<<<<< Updated upstream
                 out.write("temporary name" + "!" + typeAndDetails[0] + "=" + typeAndDetails[1]);
+=======
+                out.write(name + "!" + typeAndDetails[0] + "$" + typeAndDetails[1] + "=" + typeAndDetails[2]);
+                //name ! type $ user = details
+>>>>>>> Stashed changes
                 //System.out.print("temporary name" + "!" + typeAndDetails[0] + "=" + typeAndDetails[1]);
                 out.flush();
                 out.close();
@@ -301,6 +311,7 @@ class Recipe extends HBox {
     private String recipeTotal;
     private String recipeType;
     private String id;
+    private String user;
 
     private DetailedView currDetailedView;
     private DetailedController detailedController;
@@ -349,6 +360,16 @@ class Recipe extends HBox {
         
     }
 
+<<<<<<< Updated upstream
+=======
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+>>>>>>> Stashed changes
 
     public String getID(){
         return id;
