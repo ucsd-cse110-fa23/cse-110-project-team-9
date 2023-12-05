@@ -23,6 +23,7 @@ public class RecipeController {
         
         this.recipe.setGetButtonAction(this::handleGetButton);
         this.recipe.setDeleteButtonAction(this::handleDeleteButton);
+        this.recipe.setShareButtonAction(this::handleShareButton);
     }
 
     public void handleDeleteButton(ActionEvent event) {
@@ -74,4 +75,21 @@ public class RecipeController {
             DetailedController detailedController = new DetailedController(recipe.getDetailedView(), model);
         });
     }
+    public void handleShareButton(ActionEvent event){
+        final String name;
+        Recipe curr = this.recipe;
+        String response = model.performRequest("GET", null, null, recipe.getQueryRecipeLabelName());
+
+        JSONObject jsonObject = new JSONObject(response);
+            String id = jsonObject.getString("_id");
+            name = jsonObject.getString("name");
+
+            System.out.println(name);
+            
+            Platform.runLater(() -> {
+                recipe.setRecipeName(name);
+                recipe.setShareView();
+                recipe.getShareView().getStage().show();
+        });
+        }
 }

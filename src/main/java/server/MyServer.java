@@ -28,6 +28,8 @@ public class MyServer {
   );
   
   HttpContext context = server.createContext("/", new RequestHandler(data));
+  HttpContext context2 = server.createContext("/recipe", new MyRequestHandler(data));
+  
   server.setExecutor(threadPoolExecutor);
   server.start();
 

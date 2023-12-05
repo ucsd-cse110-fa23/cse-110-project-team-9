@@ -340,16 +340,21 @@ class Recipe extends HBox {
     private String recipeTotal;
     private Label recipeType;
     private String id;
+    private Button share;
+    private String query;
+    private String recipeName;
 
     private DetailedView currDetailedView;
+    private ShareView currShareView;
     private DetailedController detailedController;
     private RecipeController recipeController;
     private String user;
-
+    
     String defaultButtonStyle = "-fx-border-color: #000000; -fx-font: 12 arial; -fx-pref-height: 30px;";
     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-height: 30px; -fx-text-fill: black;";
 
     Recipe() {
+        recipeName = "default";
         this.setPrefSize(600, 30); // sets size of recipe
         this.setStyle("-fx-background-color: #F0F8FF; -fx-border-width: 0;");
 
@@ -364,6 +369,10 @@ class Recipe extends HBox {
         detailedView.setStyle(defaultButtonStyle);
         detailedView.setAlignment(Pos.CENTER_RIGHT);
 
+        share = new Button("Share");
+        share.setStyle(defaultButtonStyle);
+        share.setAlignment(Pos.BASELINE_RIGHT);
+
         recipeLabel = new Label("Recipe: "); // create task name text field
         recipeLabel.setStyle(defaultLabelStyle);
         recipeLabel.setTextAlignment(TextAlignment.CENTER);
@@ -372,11 +381,13 @@ class Recipe extends HBox {
         recipeType.setStyle("-fx-background-color: #BCEAD5; -fx-border-width: 1; -fx-border-color: #BCEAD5; -fx-font-weight: bold; -fx-pref-height: 30px");
         recipeType.setTextAlignment(TextAlignment.CENTER);
 
-        this.getChildren().addAll(recipeType, recipeLabel, detailedView);
+        this.getChildren().addAll(recipeType, recipeLabel, detailedView, share);
         currDetailedView = new DetailedView(this, this.getRecipeTotal());
+        currShareView = new ShareView(this, this.getLink());
         Model model = new Model();
         detailedController = new DetailedController(currDetailedView, model);
         recipeController = new RecipeController(this, model);
+
     }
 
     public String getUser() {
@@ -395,6 +406,15 @@ class Recipe extends HBox {
         this.id = id;
     }
 
+    public String getLink(){
+        recipeName = recipeName.replace(" ", "-");
+        String link = "localhost:8100/recipe/?="+recipeName;
+        return link;
+    }
+
+    public ShareView getShareView(){
+        return currShareView;
+    }
 
     public DetailedView getDetailedView(){
         return currDetailedView;
@@ -408,14 +428,18 @@ class Recipe extends HBox {
         return detailedView;
     }
 
+    public Button getShareButton(){
+        return share;
+    }
+
     public Button getDeleteButton() {
         return deleteButton;
     }
     
-
     public String getRecipeLabelName() {
         return recipeLabel.getText();
     }
+
     // this will fix the query error for delete
     public String getQueryRecipeLabelName(){
         String formattedName;
@@ -424,7 +448,6 @@ class Recipe extends HBox {
         formattedName = base.replace(' ', '-');
 
         return formattedName;
-
     }
 
     public String getRecipeType() {
@@ -448,9 +471,15 @@ class Recipe extends HBox {
         //this.getChildren().add(1, recipeType);
     }
 
-    public void setRecipeName(String newRecipe) {// set title of recipe
+    public void setRecipeName(String newRecipe) {
+        recipeName = newRecipe;
         recipeLabel.setText(newRecipe);
     }
+
+    public void setShareView(){
+        currShareView = new ShareView(this, this.getLink());
+    }
+
 
     public String getRecipeName() {
         return recipeLabel.getText();
@@ -475,5 +504,9 @@ class Recipe extends HBox {
 
     public void setGetButtonAction(EventHandler<ActionEvent> eventHandler) {
         detailedView.setOnAction(eventHandler);
+    }
+
+    public void setShareButtonAction(EventHandler<ActionEvent> eventHandler){
+        share.setOnAction(eventHandler);
     }
 }
