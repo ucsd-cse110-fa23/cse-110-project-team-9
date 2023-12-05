@@ -61,10 +61,10 @@ public class PantryPalApp extends Application {
         LoginView view = new LoginView();
         Model model = new Model();
         LoginController controller = new LoginController(view, model, primaryStage);
-
-        Scene scene = new Scene(view.getGrid(), 400, 200);
+        
+        Scene scene = new Scene(view.getGrid(), 400, 150);
         primaryStage.setScene(scene);
-        primaryStage.setTitle("MyServerUI");
+        primaryStage.setTitle("Create Account/Log-In");
         primaryStage.show();
     }
 

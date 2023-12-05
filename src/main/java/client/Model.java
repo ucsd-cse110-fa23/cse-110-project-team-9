@@ -2,6 +2,7 @@ package client;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -20,12 +21,8 @@ import javax.sound.sampled.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -39,14 +36,6 @@ import org.json.JSONException;
 import java.io.*;
 import java.net.*;
 import org.json.*;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -80,9 +69,60 @@ public class Model {
             in.close();
             return response;
         } catch (Exception ex) {
+            ErrorView(ex);
             ex.printStackTrace();
             return "Error: " + ex.getMessage();
         }
+    }
+
+    public void ErrorView(Exception e) {
+        
+
+        //Online code from StackOverflow used to convert error message into string
+        //Website URL: https://stackoverflow.com/questions/1149703/how-can-i-convert-a-stack-trace-to-a-string
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        String exceptionAsString = sw.toString();
+
+        int end = exceptionAsString.indexOf("\n"); 
+        if (end != -1) { exceptionAsString = exceptionAsString.substring(0 , end - 1); }
+
+        //Error message
+        Label errorMsg = new Label("Error Message");
+        errorMsg.setStyle("-fx-font-weight: bold;");
+        Label message = new Label(exceptionAsString);
+
+        //Error description
+        Label descriptionHeader = new Label("Error Description");
+        descriptionHeader.setStyle("-fx-font-weight: bold;");
+        Label description = new Label("Server not started or unavailable before App Launch");
+
+        //Suggested fix
+        Label fixHeader = new Label("Suggested Fix");
+        fixHeader.setStyle("-fx-font-weight: bold;");
+        Label fixMsg = new Label("Launch MyServer.java or wait till server is online before logging in");
+
+        Button close = new Button("Close");
+
+        VBox vbox = new VBox(10);
+        vbox.getChildren().addAll(errorMsg, message, descriptionHeader, description, fixHeader, fixMsg, close);
+        //vbox.setAlignment(Pos.CENTER);
+
+        ScrollPane scroller = new ScrollPane(vbox);
+
+        Stage stage = new Stage();
+        stage.setWidth(400);
+        stage.setHeight(235);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setTitle("Error Received!");
+        stage.setScene(new Scene(scroller));
+        stage.show();
+
+        close.setOnAction(e1 -> {
+            stage.close();
+            //Can have it so the system shuts down after receiving error message
+            //System.exit(0);
+        });
     }
 
 }
