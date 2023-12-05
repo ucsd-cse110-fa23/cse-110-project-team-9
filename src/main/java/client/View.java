@@ -51,6 +51,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
 import javax.sound.sampled.*;
 import javafx.beans.InvalidationListener;
 import javafx.collections.FXCollections;
@@ -156,6 +159,8 @@ public class View{
 
     private void openPopup() {
 
+        //Button functionality of popup
+
         Recipe recipe = new Recipe();
 
         // currRecipeText = "Current Recipe: ";
@@ -163,6 +168,9 @@ public class View{
 
         Label recipeText = new Label();
         Label recipeType = new Label();
+
+        VBox middleBox = new VBox();
+
 
         recipeText.setVisible(false);
         recipeType.setVisible(false);
@@ -192,6 +200,8 @@ public class View{
             String typeLabel = "Recipe Type: " + currRecipe.getRecipeType();
             recipeType.setText(typeLabel);
             recipeType.setVisible(true);
+
+            middleBox.getChildren().add(recipeType);
         });
 
         Button startRecording = new Button("Start Recording Ingredients");
@@ -207,9 +217,19 @@ public class View{
             ingredientsToRecipe();
             currRecipe.setRecipeTotal(ChatGPT.getResult()); 
             currRecipe.setRecipeName(ChatGPT.returnPrompt());
+            //Image generation
+            imageGeneration(currRecipe);
+            currRecipe.setURL(DallE.getURL());
+            Image recipeImage = new Image(currRecipe.getURL());
+            ImageView currImage = new ImageView(recipeImage);
+        
+            //System.out.println(currRecipe.getURL());
             //String recipeLabel = "Recipe Preview: " + currRecipe.getRecipeLabelName();
             recipeText.setText(currRecipe.getRecipeTotal());
             recipeText.setVisible(true);
+
+            middleBox.getChildren().addAll(currImage, recipeText);
+
         });
 
         Button closeButton = new Button("Back");
@@ -229,40 +249,58 @@ public class View{
             ingredientsToRecipe();
             currRecipe.setRecipeName(ChatGPT.returnPrompt());
             currRecipe.setRecipeTotal(ChatGPT.getResult());
-            String recipeLabel = "Recipe Preview: " + currRecipe.getRecipeTotal();
-            recipeText.setText(recipeLabel);
+            //Image generation
+            imageGeneration(currRecipe);
+            currRecipe.setURL(DallE.getURL());
+            Image recipeImage = new Image(currRecipe.getURL());
+            ImageView currImage = new ImageView(recipeImage);        
+            //System.out.println(currRecipe.getURL());
+
+            //String recipeLabel = "Recipe Preview: " + currRecipe.getRecipeTotal();
+            recipeText.setText(currRecipe.getRecipeTotal());
             recipeText.setVisible(true);
+
+            middleBox.getChildren().addAll(currImage, recipeText);
         });
 
-
+        
+        
+        //UI Setup of Popup
         BorderPane popupLayout = new BorderPane();
         Scene popupScene = new Scene(popupLayout, 600, 600);
         popupStage.setScene(popupScene);
 
+        //Recording Type
         HBox typeBox = new HBox();
         typeBox.getChildren().addAll(recTypeStart, recTypeStop, recordingLabel1);
         typeBox.setAlignment(Pos.CENTER);
         typeBox.setSpacing(5);
 
+        //Recording Ingredients
         HBox recordingBox = new HBox();
         recordingBox.getChildren().addAll(startRecording, stopRecording, recordingLabel2);
         recordingBox.setSpacing(5);
         recordingBox.setAlignment(Pos.CENTER);
 
+        //Combining above 2 HBox
         VBox topBox = new VBox();
         topBox.getChildren().addAll(typeBox, recordingBox);
         topBox.setSpacing(10);
-
         popupLayout.setTop(topBox);
 
-        VBox middleBox = new VBox();
+        //Setting middle area of popup
+
+        /* 
 
         String typeLabel = "Recipe Type: " + currRecipe.getRecipeType();
         String recipeLabel = "Recipe Preview: " + currRecipe.getRecipeLabelName();
         recipeType.setText(typeLabel);
         recipeText.setText(recipeLabel);
-        middleBox.getChildren().addAll(recipeType, recipeText);
+
+        middleBox.getChildren().add(recipeType);
+        middleBox.getChildren().add(recipeText);
         middleBox.setSpacing(5);
+        */
 
         ScrollPane scroller = new ScrollPane(middleBox);
         scroller.setFitToWidth(true);
@@ -284,6 +322,17 @@ public class View{
 
     public void setDeleteButtonAction(EventHandler<ActionEvent> eventHandler) {
         currRecipe.getDeleteButton().setOnAction(eventHandler);
+    }
+
+    private void imageGeneration(Recipe curr) {
+        String[] args = new String[] { curr.getRecipeName() };
+        try {
+            DallE.main(args);
+        } catch (InterruptedException f) {
+            f.printStackTrace();
+        } catch (IOException f) {
+            f.printStackTrace();
+        }
     }
 
     private void audioToText() {

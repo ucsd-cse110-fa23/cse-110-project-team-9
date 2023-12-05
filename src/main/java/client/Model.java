@@ -345,6 +345,7 @@ class Recipe extends HBox {
     private DetailedController detailedController;
     private RecipeController recipeController;
     private String user;
+    private String imageURL;
 
     String defaultButtonStyle = "-fx-border-color: #000000; -fx-font: 12 arial; -fx-pref-height: 30px;";
     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-height: 30px; -fx-text-fill: black;";
@@ -368,7 +369,7 @@ class Recipe extends HBox {
         recipeLabel.setStyle(defaultLabelStyle);
         recipeLabel.setTextAlignment(TextAlignment.CENTER);
 
-        recipeType = new Label("Recipe Type: NONE");
+        recipeType = new Label("NONE");
         recipeType.setStyle("-fx-background-color: #BCEAD5; -fx-border-width: 1; -fx-border-color: #BCEAD5; -fx-font-weight: bold; -fx-pref-height: 30px");
         recipeType.setTextAlignment(TextAlignment.CENTER);
 
@@ -377,6 +378,14 @@ class Recipe extends HBox {
         Model model = new Model();
         detailedController = new DetailedController(currDetailedView, model);
         recipeController = new RecipeController(this, model);
+    }
+
+    public String getURL() {
+        return imageURL;
+    }
+
+    public void setURL(String newURL) {
+        imageURL = newURL;
     }
 
     public String getUser() {
