@@ -21,7 +21,7 @@ public class Controller {
         Recipe curr = view.getRecipe();
         curr.setRecipeName(view.getRecipeName());
         curr.setRecipeType(view.getRecipeType());
-        String[] typeAndRecipe = new String[]{curr.getRecipeType().substring(13), view.getUser(), curr.getRecipeTotal()};
+        String[] typeAndRecipe = new String[]{curr.getRecipeType(), view.getUser(), curr.getRecipeTotal()};
         String response = model.performRequest("POST", curr.getQueryRecipeLabelName(), typeAndRecipe, null);
         curr.setID(response);
         

@@ -452,6 +452,10 @@ class Recipe extends HBox {
         recipeLabel.setText(newRecipe);
     }
 
+    public String getRecipeName() {
+        return recipeLabel.getText();
+    }
+
     public void setRecipeTotal(String therecipe) {
         recipeTotal = therecipe; // put entire recipe in string
         // Now that the recipeTotal is set, initialize the DetailedView IMPORTANT

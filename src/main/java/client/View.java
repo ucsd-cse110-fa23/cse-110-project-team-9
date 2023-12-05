@@ -48,6 +48,7 @@ import java.io.*;
 import java.rmi.RMISecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.sound.sampled.*;
@@ -74,6 +75,7 @@ import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.changestream.ChangeStreamDocument;
 import com.mongodb.client.result.DeleteResult;
 
+import static com.mongodb.client.model.Sorts.*;
 
 public class View{
 
@@ -406,41 +408,31 @@ public class View{
             filter.setValue("All");//defualt filtering
 
             Button filterButton= new Button("Filter");
-            filterButton.setOnAction(e-> getFilterChoice(filter));
+            filterButton.setOnAction(e-> applyFilterChoice(filter));
 
-            sorter.getItems().addAll("New to Old", "Old to New", "Alphabetical", "Reverse Alphabetical");
-            sorter.setValue("old to new");
+            sorter.getItems().addAll("Old to New", "New to Old", "Alphabetical", "Reverse Alphabetical");
+            sorter.setValue("Old to New");
 
             Button sorterButton= new Button("Sort");
-            sorterButton.setOnAction(e -> getSortChoice(sorter));
+            sorterButton.setOnAction(e -> applySortChoice(sorter));
 
             this.getChildren().addAll(addButton, filter, filterButton , sorter, sorterButton);
             this.setAlignment(Pos.CENTER); // aligning the buttons to center
         
         }
         
-        private void getFilterChoice(ChoiceBox<String> filters){
+        private void applyFilterChoice(ChoiceBox<String> filters){
             
             String type = filters.getValue();// gets the type meal type to filter for
             recipeList.setFilter(type);
-            //recipeList.updateRecipeListView();
-
+            recipeList.updateRecipeListView();
         }
 
-        private void getSortChoice(ChoiceBox<String> sort){
+        private void applySortChoice(ChoiceBox<String> sort){
             String type= sort.getValue();//gets the sort selection
-            if(type== "New to Old"){
-                //recipeList.updateSorted1();
-            }
-            else if(type=="Old to New"){
-                //recipeList.updateSorted2();
-            }
-            else if(type== "Alphabetical"){
-                //recipeList.updateSorted3();
-            }
-            else if (type == "Reverse Alphabetical" ){//reverse alphabetical
-                //recipeList.updateSorted4();
-            }
+            recipeList.setSort(type);
+            recipeList.updateRecipeListView();
+            //recipeList.sortRecipes();
         }
 
         public Button getAddButton() {
@@ -472,6 +464,7 @@ public class View{
         private List<InvalidationListener> listeners;
         private ObservableList<Recipe> recipes;
         private String filterType = "All";
+        private String sortType = "None";
 
         RecipeList(String user) {
 
@@ -496,6 +489,7 @@ public class View{
         }
 
         public void fetchRecipesFromMongoDB() {
+            sortRecipes();
             List<Document> recipeDocuments = recipesCollection.find(eq("user", user)).into(new ArrayList<>());
             Platform.runLater(() -> {
                 recipes.clear();
@@ -539,6 +533,7 @@ public class View{
                         }
                     }
                 }
+                sortRecipes();
 
                 notifyListeners();
             });
@@ -566,8 +561,12 @@ public class View{
         public void setFilter(String newFilter) {
             filterType = newFilter;
         }
+        public void setSort(String newSort) {
+            sortType = newSort;
+        }
         
         public void updateRecipeListView() {
+            //Adds recipe to recipeList based on filter
             if (filterType.compareTo("All") == 0) {
                 recipeList.getChildren().clear();
                 recipeList.getChildren().addAll(recipeList.getRecipes());
@@ -596,7 +595,34 @@ public class View{
                     }
                 }
             }
+            sortRecipes();
 
+        }
+        
+        //Sorts recipes on MongoDB
+        public void sortRecipes() {
+            if(sortType.compareTo("Alphabetical") == 0) {
+                Collections.sort(recipes,new RecipeCompare());
+            } else if (sortType.compareTo("Reverse Alphabetical") == 0) {
+                Collections.sort(recipes, new RecipeCompareReverse());
+            } else if (sortType.compareTo("New to Old") == 0) {
+                Collections.reverse(recipes);
+            }
+        }
+    }
+
+    class RecipeCompare implements Comparator<Recipe> {
+
+        @Override
+        public int compare(Recipe o1, Recipe o2) {
+            return o1.getRecipeName().compareTo(o2.getRecipeName());
+        }
+    }
+    class RecipeCompareReverse implements Comparator<Recipe> {
+
+        @Override
+        public int compare(Recipe o1, Recipe o2) {
+            return o2.getRecipeName().compareTo(o1.getRecipeName());
         }
     }
 } 
