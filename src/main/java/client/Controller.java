@@ -17,10 +17,11 @@ public class Controller {
     }
 
     private void handlePostButton(ActionEvent event) {
-        //name ! type $ user = details
+
         Recipe curr = view.getRecipe();
         curr.setRecipeName(view.getRecipeName());
         curr.setRecipeType(view.getRecipeType());
+        
         String[] typeAndRecipe = new String[]{curr.getRecipeType(), view.getUser(), curr.getRecipeTotal()};
         String response = model.performRequest("POST", curr.getQueryRecipeLabelName(), typeAndRecipe, null);
         curr.setID(response);
@@ -29,8 +30,6 @@ public class Controller {
         
         new Thread(() -> {
             view.getRecipeList().fetchRecipesFromMongoDB();
-
-            
             Platform.runLater(() -> {
                 view.getRecipeList().updateRecipeListView();
             });
