@@ -460,7 +460,7 @@ public class View{
             logoutButton.setOnAction(e -> {
                 LoginView view = new LoginView();
                 Model model = new Model();
-                Scene scene = new Scene(view.getGrid(), 400, 200);
+                Scene scene = new Scene(view.getGrid(), 400, 150);
                 LoginController controller = new LoginController(view, model, appFrame);
                 appFrame.setScene(scene);
                 appFrame.setTitle("MyServerUI");
