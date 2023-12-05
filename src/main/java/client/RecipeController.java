@@ -1,5 +1,7 @@
 package client;
 
+import static com.mongodb.client.model.Filters.jsonSchema;
+
 import org.bson.json.JsonObject;
 
 import client.View.RecipeList;
@@ -45,6 +47,7 @@ public class RecipeController {
         final String name;
         final String type;
         final String details;
+        final String user;
 
         
         JSONObject jsonObject = new JSONObject(response);
@@ -52,6 +55,7 @@ public class RecipeController {
         name = jsonObject.getString("name");
         type = jsonObject.getString("type");
         details = jsonObject.getString("details");
+        user = jsonObject.getString("user");
         /*
         System.out.println("ID: " + id);
         System.out.println("Name: " + name);
@@ -64,9 +68,10 @@ public class RecipeController {
             recipe.setRecipeTotal(details);
             recipe.setRecipeText(details);
             recipe.setRecipeType(type);
+            recipe.setUser(user);
             recipe.setID(id);
-            DetailedController detailedController = new DetailedController(recipe.getDetailedView(), model);
             recipe.getDetailedView().getStage().show();
+            DetailedController detailedController = new DetailedController(recipe.getDetailedView(), model);
         });
     }
 }

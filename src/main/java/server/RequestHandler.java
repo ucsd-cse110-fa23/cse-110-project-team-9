@@ -80,21 +80,20 @@ public class RequestHandler implements HttpHandler {
 
     private String handlePost(HttpExchange httpExchange) throws IOException {
 
-        //name ! type $ user = details
-
         InputStream inStream = httpExchange.getRequestBody();
         Scanner scanner = new Scanner(inStream);
+
         String postData = scanner.nextLine();
-        System.out.print(postData);
-        while (scanner.hasNextLine()) {
-            postData += scanner.nextLine();
-        }
         String name = postData.substring(0, postData.indexOf("!"));
         String type = postData.substring(postData.indexOf("!") + 1, postData.indexOf("$"));
         String user = postData.substring(postData.indexOf("$") + 1, postData.indexOf("="));
-        String details = postData.substring(postData.indexOf("=") + 1);
 
-        System.out.print("postdata: " + postData);
+        String details = postData.substring(postData.indexOf("=") + 1);
+        while (scanner.hasNextLine()) {
+            postData = scanner.nextLine();
+            details += '\n';
+            details += postData;
+        }
 
         if(name.equals("login")){
             Document rec = usersCollection.find(eq("name", name)).first();
@@ -109,11 +108,10 @@ public class RequestHandler implements HttpHandler {
             return type;
         }
 
-        // Store data in hashmap
-        // String[] typeAndDetails = new String[]{type, details};
-        // data.put(name, typeAndDetails);
         String id = new ObjectId().toString();
+        String query = name.replace(" ", "-");
         Document recipe = new Document("_id", id);
+        name = name.replace("-", " ");
         //System.out.print("NAME: " + name + ", TYPE: " + type + ", USER: " + user + ", DETAILS: " + details);
         recipe.append("name", name)
                 .append("type", type)
@@ -132,15 +130,15 @@ public class RequestHandler implements HttpHandler {
         String response = "default";
        // InputStream inStream = httpExchange.getRequestBody();
        // Scanner scanner = new Scanner(inStream);
-        //String postData = scanner.nextLine();
+       // String postData = scanner.nextLine();
        // String name = postData;
        // System.out.println(result);
-        
-        URI uri = httpExchange.getRequestURI();
 
+        URI uri = httpExchange.getRequestURI();
         String query = uri.getRawQuery();
         if (query != null) {
             String value = query.substring(query.indexOf("=") + 1);
+            value.replace("-", " ");
             System.out.print("value: " + value);
             if (value.substring(0, 5).equals("login")) {
                 Document rec = usersCollection.find(eq("username", value.substring(5))).first();
@@ -150,12 +148,24 @@ public class RequestHandler implements HttpHandler {
                 response = rec.toJson();
                 return response;
             }
-            //value = value.replace("-", " ");
+            
+            value = value.replace("-", " ");
             // Bson filter = eq("name", value);
             Document rec = recipesCollection.find(eq("name", value)).first();
             // DeleteResult result = recipesCollection.deleteOne(filter);
             response = rec.toJson();
+            System.out.println(rec);
             // System.out.println(result);
+             StringBuilder htmlBuilder = new StringBuilder();
+            htmlBuilder
+                .append("<html>")
+                .append("<body>")
+                .append("<h1>")
+                .append("For Recipe " + value)
+                .append("it will go here")
+                .append("</h1>")
+                .append("</body>")
+                .append("</html>");
             return response;
         }
         return response;
@@ -174,7 +184,7 @@ public class RequestHandler implements HttpHandler {
         String query = uri.getRawQuery();
         if (query != null) {
             String value = query.substring(query.indexOf("=") + 1);
-            //value = value.replace("-", " ");
+            value = value.replace("-", " ");
             Bson filter = eq("name", value);
             DeleteResult result = recipesCollection.deleteOne(filter);
             response = "deleted" + filter.toString();
@@ -187,14 +197,17 @@ public class RequestHandler implements HttpHandler {
         InputStream inStream = httpExchange.getRequestBody();
         Scanner scanner = new Scanner(inStream);
         String postData = scanner.nextLine();
-        System.out.print(postData);
-        while (scanner.hasNextLine()) {
-            postData += scanner.nextLine();
-        }
+
         String ID = postData.substring(0, postData.indexOf("!"));
         String type = postData.substring(postData.indexOf("!") + 1, postData.indexOf("$"));
         String user = postData.substring(postData.indexOf("$") + 1, postData.indexOf("="));
         String details = postData.substring(postData.indexOf("=") + 1);
+
+        while (scanner.hasNextLine()) {
+            postData = scanner.nextLine();
+            details += '\n';
+            details += postData;
+        }
 
         Bson filter = and(eq("_id", ID));
         Bson updateOperation = set("details", details);
