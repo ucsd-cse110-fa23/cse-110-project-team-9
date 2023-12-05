@@ -62,9 +62,9 @@ public class PantryPalApp extends Application {
         // RecipeController recipeController = new RecipeController(primaryStage);
         String[] userAndPassword = new String[]{"login.getUsername()", "login.getPassword()", null, null};
         String response = model.performRequest("POST", "start", userAndPassword, null);
-        System.out.println(response);
+        //System.out.println(response);
 
-        if (!"none".equals(response)) {
+        if (!"none".equals(response) && !"Error".equals(response)) {
             View view = new View(primaryStage, response);
             Controller controller = new Controller(view, model);
             view.getAppFrame().show();   
@@ -86,7 +86,7 @@ public class PantryPalApp extends Application {
             LoginView login = new LoginView();
             Model model1 = new Model();
             LoginController controllerLogin = new LoginController(login, model1, primaryStage);
-            Scene scene = new Scene(login.getGrid(), 400, 200);
+            Scene scene = new Scene(login.getGrid(), 400, 150);
             primaryStage.setScene(scene);
             primaryStage.setTitle("MyServerUI");
             primaryStage.show();

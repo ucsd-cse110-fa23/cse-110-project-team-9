@@ -68,7 +68,7 @@ public class Controller {
         LoginView login = new LoginView();
             Model model1 = new Model();
             LoginController controllerLogin = new LoginController(login, model1, view.getAppFrame());
-            Scene scene = new Scene(login.getGrid(), 400, 200);
+            Scene scene = new Scene(login.getGrid(), 400, 150);
             view.getAppFrame().setScene(scene);
             view.getAppFrame().setTitle("MyServerUI");
             view.getAppFrame().show();

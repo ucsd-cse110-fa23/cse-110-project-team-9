@@ -71,7 +71,7 @@ public class Model {
         } catch (Exception ex) {
             ErrorView(ex);
             ex.printStackTrace();
-            return "Error: " + ex.getMessage();
+            return "Error";
         }
     }
 

@@ -85,7 +85,7 @@ public class RecipeController {
     public void handleShareButton(ActionEvent event){
         final String name;
         Recipe curr = this.recipe;
-        String response = model.performRequest("GET", "login", null, "login" + view.getRecipeType());
+        String response = model.performRequest("GET", null, null, recipe.getQueryRecipeLabelName());
 
         JSONObject jsonObject = new JSONObject(response);
             String id = jsonObject.getString("_id");
