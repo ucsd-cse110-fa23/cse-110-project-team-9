@@ -57,15 +57,39 @@ public class PantryPalApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // RecipeController recipeController = new RecipeController(primaryStage);
-        LoginView view = new LoginView();
+        
         Model model = new Model();
-        LoginController controller = new LoginController(view, model, primaryStage);
+        // RecipeController recipeController = new RecipeController(primaryStage);
+        String[] userAndPassword = new String[]{"login.getUsername()", "login.getPassword()", null, null};
+        String response = model.performRequest("POST", "start", userAndPassword, null);
+        System.out.println(response);
 
-        Scene scene = new Scene(view.getGrid(), 400, 200);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("MyServerUI");
-        primaryStage.show();
+        if (!"none".equals(response)) {
+            View view = new View(primaryStage, response);
+            Controller controller = new Controller(view, model);
+            view.getAppFrame().show();   
+            new Thread(() -> {
+                while (true) {
+                    try {
+                        view.getRecipeList().fetchRecipesFromMongoDB();
+                        Platform.runLater(() -> {
+                            view.getRecipeList().updateRecipeListView();
+                        });
+                        Thread.sleep(2500); //sleep time
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+        }
+        else {
+            LoginView login = new LoginView();
+            Model model1 = new Model();
+            LoginController controllerLogin = new LoginController(login, model1, primaryStage);
+            Scene scene = new Scene(login.getGrid(), 400, 200);
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("MyServerUI");
+            primaryStage.show();
+        }
     }
-
-    }
+}

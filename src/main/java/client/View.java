@@ -457,16 +457,6 @@ public class View{
             logoutButton = new Button("Log Out");
             //logoutButton.setStyle(defaultButtonStyle);
 
-            logoutButton.setOnAction(e -> {
-                LoginView view = new LoginView();
-                Model model = new Model();
-                Scene scene = new Scene(view.getGrid(), 400, 200);
-                LoginController controller = new LoginController(view, model, appFrame);
-                appFrame.setScene(scene);
-                appFrame.setTitle("MyServerUI");
-                appFrame.show();
-            });
-
             addButton.setOnAction(e -> {
                 openPopup();
             });
