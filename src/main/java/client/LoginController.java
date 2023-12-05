@@ -24,7 +24,7 @@ public class LoginController {
 
     public void handleCreateAccountButton(ActionEvent event){
         System.out.print("Creating Account");
-        String[] userAndPassword = new String[]{view.getUsername(), view.getPassword(), null};
+        String[] userAndPassword = new String[]{view.getUsername(), view.getPassword(), null, null};
         String response = model.performRequest("POST", "login", userAndPassword, null);
         System.out.print("Create Account response: " + response);
         if(response.equals("Username already taken")){

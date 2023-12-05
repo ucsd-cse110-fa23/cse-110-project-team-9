@@ -21,6 +21,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 
@@ -88,7 +89,7 @@ public class RequestHandler implements HttpHandler {
         String user = postData.substring(postData.indexOf("$") + 1, postData.indexOf("="));
         String imgURL = postData.substring(postData.indexOf("=") + 1,postData.indexOf("*"));
         String details = postData.substring(postData.indexOf("*") + 1);
-
+        String response = "none";
         while (scanner.hasNextLine()) {
             postData = scanner.nextLine();
             details += '\n';
@@ -96,16 +97,44 @@ public class RequestHandler implements HttpHandler {
         }
 
         if(name.equals("login")){
-            Document rec = usersCollection.find(eq("name", name)).first();
+            Document rec = usersCollection.find(eq("name", user)).first();
             if(rec != null){
                 scanner.close();
                 return "Username already taken";
             }
             Document doc = new Document("username", type);
             doc.append("password", user);
+            doc.append("active", 1);
             usersCollection.insertOne(doc);
             scanner.close();
             return type;
+        }
+        else if(name.equals("start")){
+            Document rec1 = usersCollection.find(eq("active", 1)).first();
+            if (rec1 != null){
+                response = rec1.get("username").toString();
+                scanner.close();
+                return response;
+            }
+            else {
+                scanner.close();
+                return "none";
+            }
+        }
+        else if (name.equals("logout")) {
+            try {
+                Document rec = usersCollection.find(eq("username", user)).first();
+                if (rec != null) {
+                    // Update the "active" field to 0
+                    usersCollection.updateOne(eq("username", user), set("active", 0));
+                    response = ("User logged out successfully.");
+                } else {
+                    response = user;
+                }
+            } finally {
+                scanner.close();
+            }
+            return response;
         }
 
         String id = new ObjectId().toString();
@@ -142,10 +171,11 @@ public class RequestHandler implements HttpHandler {
             value.replace("-", " ");
             System.out.print("value: " + value);
             if (value.substring(0, 5).equals("login")) {
-                Document rec = usersCollection.find(eq("username", value.substring(5))).first();
+                Document rec = usersCollection.find(eq("username", value.substring(5))).first();               
                 if (rec == null) {
                     return "Incorrect username or password";
                 }
+                usersCollection.updateOne(eq("username", value.substring(5)), set("active", 1));
                 response = rec.toJson();
                 return response;
             }

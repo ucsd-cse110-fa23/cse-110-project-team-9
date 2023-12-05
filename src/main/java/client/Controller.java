@@ -18,7 +18,7 @@ public class Controller {
         
         this.view.setSaveButtonAction(this::handlePostButton);
         this.view.setDeleteButtonAction(this::handleDeleteButton);
-        //this.view.setLogOutAction(this::handleLogoutButton);
+        this.view.setLogOutAction(this::handleLogoutButton);
     }
 
     private void handlePostButton(ActionEvent event) {
@@ -60,7 +60,17 @@ public class Controller {
 
     }
     public void handleLogoutButton(ActionEvent event){
-        view.getAppFrame().close();
-        
-    }
+        String[] userAndPassword = new String[]{null, view.getUser(), null, null};
+        System.out.println(view.getUser());
+        String response = model.performRequest("POST", "logout", userAndPassword, null);
+        System.out.println(response);
+
+        LoginView login = new LoginView();
+            Model model1 = new Model();
+            LoginController controllerLogin = new LoginController(login, model1, view.getAppFrame());
+            Scene scene = new Scene(login.getGrid(), 400, 200);
+            view.getAppFrame().setScene(scene);
+            view.getAppFrame().setTitle("MyServerUI");
+            view.getAppFrame().show();
+        }
 }
