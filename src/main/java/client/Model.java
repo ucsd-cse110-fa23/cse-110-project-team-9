@@ -69,7 +69,7 @@ public class Model {
 
             if (method.equals("POST") || method.equals("PUT")) {
                 OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-                out.write(name + "!" + typeAndDetails[0] + "$" + typeAndDetails[1] + "=" + typeAndDetails[2]);
+                out.write(name + "!" + typeAndDetails[0] + "$" + typeAndDetails[1] + "=" + typeAndDetails[2] + "*" + typeAndDetails[3]);
                 //name ! type $ user = details
                 out.flush();
                 out.close();
@@ -340,8 +340,12 @@ class Recipe extends HBox {
     private String recipeTotal;
     private Label recipeType;
     private String id;
+    private Button share;
+    private String query;
+    private String recipeName;
 
     private DetailedView currDetailedView;
+    private ShareView currShareView;
     private DetailedController detailedController;
     private RecipeController recipeController;
     private String user;
@@ -351,6 +355,8 @@ class Recipe extends HBox {
     String defaultLabelStyle = "-fx-font: 13 arial; -fx-pref-height: 30px; -fx-text-fill: black;";
 
     Recipe() {
+        imageURL = "https://example.com/path/to/image.jpg";
+        recipeName = "default";
         this.setPrefSize(600, 30); // sets size of recipe
         this.setStyle("-fx-background-color: #F0F8FF; -fx-border-width: 0;");
 
@@ -365,6 +371,10 @@ class Recipe extends HBox {
         detailedView.setStyle(defaultButtonStyle);
         detailedView.setAlignment(Pos.CENTER_RIGHT);
 
+        share = new Button("Share");
+        share.setStyle(defaultButtonStyle);
+        share.setAlignment(Pos.BASELINE_RIGHT);
+
         recipeLabel = new Label("Recipe: "); // create task name text field
         recipeLabel.setStyle(defaultLabelStyle);
         recipeLabel.setTextAlignment(TextAlignment.CENTER);
@@ -373,8 +383,9 @@ class Recipe extends HBox {
         recipeType.setStyle("-fx-background-color: #BCEAD5; -fx-border-width: 1; -fx-border-color: #BCEAD5; -fx-font-weight: bold; -fx-pref-height: 30px");
         recipeType.setTextAlignment(TextAlignment.CENTER);
 
-        this.getChildren().addAll(recipeType, recipeLabel, detailedView);
-        currDetailedView = new DetailedView(this, this.getRecipeTotal());
+        this.getChildren().addAll(recipeType, recipeLabel, detailedView, share);
+        currDetailedView = new DetailedView(this, this.getRecipeTotal(), this.getURL());
+        currShareView = new ShareView(this, this.getLink());
         Model model = new Model();
         detailedController = new DetailedController(currDetailedView, model);
         recipeController = new RecipeController(this, model);
@@ -404,6 +415,26 @@ class Recipe extends HBox {
         this.id = id;
     }
 
+    public String getLink(){
+        recipeName = recipeName.replace(" ", "-");
+        String link = "localhost:8100/recipe/?="+recipeName;
+        return link;
+    }
+
+    public ShareView getShareView(){
+        return currShareView;
+    }
+
+    public Button getShareButton(){
+        return share;
+    }
+
+    public void setShareView(){
+        currShareView = new ShareView(this, this.getLink());
+    }
+    public void setDetailedView(){
+        currDetailedView = new DetailedView(this, this.getRecipeTotal(), this.getURL());
+    }
 
     public DetailedView getDetailedView(){
         return currDetailedView;
@@ -457,7 +488,8 @@ class Recipe extends HBox {
         //this.getChildren().add(1, recipeType);
     }
 
-    public void setRecipeName(String newRecipe) {// set title of recipe
+    public void setRecipeName(String newRecipe) { //set title of recipe
+        recipeName = newRecipe;
         recipeLabel.setText(newRecipe);
     }
 
@@ -467,8 +499,6 @@ class Recipe extends HBox {
 
     public void setRecipeTotal(String therecipe) {
         recipeTotal = therecipe; // put entire recipe in string
-        // Now that the recipeTotal is set, initialize the DetailedView IMPORTANT
-        currDetailedView = new DetailedView(this, this.getRecipeTotal());
     }
 
     public String getRecipeTotal() {
@@ -484,5 +514,8 @@ class Recipe extends HBox {
 
     public void setGetButtonAction(EventHandler<ActionEvent> eventHandler) {
         detailedView.setOnAction(eventHandler);
+    }
+    public void setShareButtonAction(EventHandler<ActionEvent> eventHandler){
+        share.setOnAction(eventHandler);
     }
 }

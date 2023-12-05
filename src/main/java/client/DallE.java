@@ -74,7 +74,7 @@ public class DallE {
         }
         */
     }
-
+    // example url https://media.wired.com/photos/5b8999943667562d3024c321/master/w_1600,c_limit/trash2-01.jpg
     public static String getURL() {
         return generatedImageURL;
     }

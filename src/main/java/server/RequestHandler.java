@@ -82,13 +82,13 @@ public class RequestHandler implements HttpHandler {
 
         InputStream inStream = httpExchange.getRequestBody();
         Scanner scanner = new Scanner(inStream);
-
         String postData = scanner.nextLine();
         String name = postData.substring(0, postData.indexOf("!"));
         String type = postData.substring(postData.indexOf("!") + 1, postData.indexOf("$"));
         String user = postData.substring(postData.indexOf("$") + 1, postData.indexOf("="));
+        String imgURL = postData.substring(postData.indexOf("=") + 1,postData.indexOf("*"));
+        String details = postData.substring(postData.indexOf("*") + 1);
 
-        String details = postData.substring(postData.indexOf("=") + 1);
         while (scanner.hasNextLine()) {
             postData = scanner.nextLine();
             details += '\n';
@@ -116,7 +116,8 @@ public class RequestHandler implements HttpHandler {
         recipe.append("name", name)
                 .append("type", type)
                 .append("user", user)
-                .append("details", details);
+                .append("details", details)
+                .append("imageURL", imgURL);
 
         recipesCollection.insertOne(recipe);
 
@@ -156,16 +157,6 @@ public class RequestHandler implements HttpHandler {
             response = rec.toJson();
             System.out.println(rec);
             // System.out.println(result);
-             StringBuilder htmlBuilder = new StringBuilder();
-            htmlBuilder
-                .append("<html>")
-                .append("<body>")
-                .append("<h1>")
-                .append("For Recipe " + value)
-                .append("it will go here")
-                .append("</h1>")
-                .append("</body>")
-                .append("</html>");
             return response;
         }
         return response;
@@ -201,7 +192,8 @@ public class RequestHandler implements HttpHandler {
         String ID = postData.substring(0, postData.indexOf("!"));
         String type = postData.substring(postData.indexOf("!") + 1, postData.indexOf("$"));
         String user = postData.substring(postData.indexOf("$") + 1, postData.indexOf("="));
-        String details = postData.substring(postData.indexOf("=") + 1);
+        String imgURL = postData.substring(postData.indexOf("=") + 1,postData.indexOf("*"));
+        String details = postData.substring(postData.indexOf("*") + 1);
 
         while (scanner.hasNextLine()) {
             postData = scanner.nextLine();

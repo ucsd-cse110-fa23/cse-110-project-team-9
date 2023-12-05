@@ -20,7 +20,7 @@ public class DetailedController {
 
         String ID = view.getRecipe().getID();
         System.out.print("ID: " + ID);
-        String[] typeAndRecipe = new String[]{view.getRecipeType(), view.getRecipe().getUser(), view.getRecipeAsText().getText()};
+        String[] typeAndRecipe = new String[]{view.getRecipeType(), view.getRecipe().getUser(), view.getRecipe().getURL(), view.getRecipeAsText().getText()};
         String response = model.performRequest("PUT", ID, typeAndRecipe, null);
 
         System.out.print("DetailedController response: " + response);

@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import javax.sound.sampled.*;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
 
 public class DetailedView {
     private Stage stage;
@@ -26,13 +29,16 @@ public class DetailedView {
     private Recipe recipe;
     private Button closeButton;
     private String recipeText;
+    private Image image;
+    private ImageView imageView;
 
-    public DetailedView(Recipe inputRecipe, String recipeString) {
+
+    public DetailedView(Recipe inputRecipe, String recipeString, String imageURL) {
         stage = new Stage();
         recipe = inputRecipe;
         stage.setTitle("Detailed View");
         recipeText = recipe.getRecipeTotal();  // Initialize recipeText with the recipe's total
-        BorderPane mainLayout = createMainLayout(recipe, recipeString);
+        BorderPane mainLayout = createMainLayout(recipe, recipeString, imageURL);
         Scene detailedScene = new Scene(mainLayout, 600, 600);
         stage.setScene(detailedScene);
     }
@@ -73,28 +79,39 @@ public class DetailedView {
         alert.showAndWait();
     }
 
-    private BorderPane createMainLayout(Recipe recipe, String totalRecipe) {
-        BorderPane root = new BorderPane();
+    private BorderPane createMainLayout(Recipe recipe, String totalRecipe, String imageURL) {
 
+        BorderPane root = new BorderPane();
         DVHeader header = new DVHeader();
         DVFooter footer = new DVFooter(recipe);
 
         recipeAsText = new TextArea(totalRecipe);// create editable text area
         recipeAsText.setEditable(false);
         ScrollPane scroll = new ScrollPane(recipeAsText);
+
+        imageView = new ImageView();
+        image = new Image(imageURL);
+        imageView.setImage(image);
+        imageView.setFitWidth(150);
+        imageView.setFitHeight(150);
+        imageView.setPreserveRatio(true);
+
+
         scroll.setFitToWidth(true);
         scroll.setFitToHeight(true);
 
         root.setTop(header);
         root.setCenter(scroll);
         root.setBottom(footer);
-
+        root.setRight(imageView);
         return root;
     }
 
     public String saveNewRecipe() {
         return recipeAsText.getText();
     }
+
+
 
     class DVHeader extends BorderPane {
         DVHeader() {

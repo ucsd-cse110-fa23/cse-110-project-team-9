@@ -92,6 +92,7 @@ public class View{
 
     private Button saveButton;
     private Button addButton;
+    private Button logoutButton;
     private String user;
 
     public String getUser() {
@@ -218,8 +219,10 @@ public class View{
             currRecipe.setRecipeTotal(ChatGPT.getResult()); 
             currRecipe.setRecipeName(ChatGPT.returnPrompt());
             //Image generation
+            // for testing putting random image url:
             imageGeneration(currRecipe);
             currRecipe.setURL(DallE.getURL());
+
             Image recipeImage = new Image(currRecipe.getURL());
             ImageView currImage = new ImageView(recipeImage);
         
@@ -322,6 +325,9 @@ public class View{
 
     public void setDeleteButtonAction(EventHandler<ActionEvent> eventHandler) {
         currRecipe.getDeleteButton().setOnAction(eventHandler);
+    }
+    public void setLogOutAction(EventHandler<ActionEvent> eventHandler){
+        logoutButton.setOnAction(eventHandler);
     }
 
     private void imageGeneration(Recipe curr) {
@@ -447,7 +453,19 @@ public class View{
             String defaultButtonStyle = "-fx-font-style: italic; -fx-background-color: #FFFFFF;  -fx-font-weight: bold; -fx-font: 11 arial;";
 
             addButton = new Button("Create a Recipe"); // text displayed on add button
-            addButton.setStyle(defaultButtonStyle); // styling the button
+            //addButton.setStyle(defaultButtonStyle); // styling the button
+            logoutButton = new Button("Log Out");
+            //logoutButton.setStyle(defaultButtonStyle);
+
+            logoutButton.setOnAction(e -> {
+                LoginView view = new LoginView();
+                Model model = new Model();
+                Scene scene = new Scene(view.getGrid(), 400, 200);
+                LoginController controller = new LoginController(view, model, appFrame);
+                appFrame.setScene(scene);
+                appFrame.setTitle("MyServerUI");
+                appFrame.show();
+            });
 
             addButton.setOnAction(e -> {
                 openPopup();
@@ -465,7 +483,7 @@ public class View{
             Button sorterButton= new Button("Sort");
             sorterButton.setOnAction(e -> applySortChoice(sorter));
 
-            this.getChildren().addAll(addButton, filter, filterButton , sorter, sorterButton);
+            this.getChildren().addAll(addButton, filter, filterButton , sorter, sorterButton, logoutButton);
             this.setAlignment(Pos.CENTER); // aligning the buttons to center
         
         }
@@ -487,6 +505,7 @@ public class View{
         public Button getAddButton() {
             return addButton;
         }
+
     }
 
     class Header extends HBox {
