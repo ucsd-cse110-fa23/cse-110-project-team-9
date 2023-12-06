@@ -364,11 +364,25 @@ class MockChatGPT extends ChatGPT{
     }
 
 class MockWhisper extends Whisper{
-    private static String result1;
-    private static String result2;
-    public static void main(String[] args) throws IOException, URISyntaxException {
-        result1 = "Ingredients";
-        result2 = "Meal Type";
+    private static String result;
+    File breakfast = new File("MockWhisperType1.wav");
+    File lunch = new File("MockWhisperType2.wav");
+    File dinner = new File("MockWhisperType3.wav");
+    File breakfastIng = new File("BreakfastIng.wav");
+    File lunchIng = new File("LunchtIng.wav");
+    File dinnerIng = new File("DinnerIng.wav");
+
+    public void setResult(File newRes){
+        if (newRes == breakfast){result = "breakfast";}
+        else if (newRes == lunch){result = "lunch";}
+        else if (newRes == dinner){result = "dinner";}
+        else if (newRes == dinnerIng){result = "Ingredients: steak, salt, pepper, potatos, carrots, wine, butter, thyme";}
+        else if (newRes == breakfastIng) {result = "Ingredients: flour, butter, yeast, eggs, maple syrup";}
+        else if (newRes == lunchIng) {result = "Ingredients: tortilla, beef, tomato, cheese, salsa";}
+    }
+
+    public String getResults(){
+        return result;
     }
 }
 
