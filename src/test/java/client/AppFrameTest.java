@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -185,7 +186,12 @@ public class AppFrameTest {
             View v= new View(primaryStage, response);
             RecipeList rl = v.getRecipeList();;
             MockChatGPT mcg = new MockChatGPT();
-            mcg.setResult("breakfast", "bagels and creamcheese");
+            MockWhisper mw = new MockWhisper();
+            mw.setResult(new File("MockWhisperType1.wav"));
+            String WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("BreakfastIng.wav"));
+            String WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             r.setRecipeTotal(mcg.getResultRecipe());
             r.setRecipeType(mcg.getMealType());
             rl.getChildren().add(r);
@@ -208,7 +214,12 @@ public class AppFrameTest {
             View v= new View(primaryStage, response);
             RecipeList rl = v.getRecipeList();
             MockChatGPT mcg = new MockChatGPT();
-            mcg.setResult("", "bagels and creamcheese");
+            MockWhisper mw = new MockWhisper();
+            mw.setResult(new File("recording.wav"));
+            String WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("BreakfastIng.wav"));
+            String WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             r.setRecipeTotal(mcg.getResultRecipe());
             r.setRecipeType(mcg.getMealType());
             rl.getChildren().add(r);
@@ -231,9 +242,13 @@ public class AppFrameTest {
             View v= new View(primaryStage, response);
             RecipeList rl = v.getRecipeList();
             MockChatGPT mcg = new MockChatGPT();
-            MockWhisper mv= new MockWhisper();
-            String refresh=" no refresh";
-            mcg.setResult("breakfast", "bagels and creamcheese");
+            String refresh="no refresh";
+            MockWhisper mw = new MockWhisper();
+            mw.setResult(new File("MockWhisperTest1.wav"));
+            String WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("BreakfastIng.wav"));
+            String WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             r.setRecipeTotal(mcg.getResultRecipe());
             r.setRecipeType(mcg.getMealType());
             if(refresh=="no refresh"){
@@ -261,9 +276,13 @@ public class AppFrameTest {
             View v= new View(primaryStage, response);
             RecipeList rl = v.getRecipeList();
             MockChatGPT mcg = new MockChatGPT();
-            MockWhisper mv= new MockWhisper();
+            MockWhisper mw = new MockWhisper();
+            mw.setResult(new File("MockWhisperTest1.wav"));
+            String WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("BreakfastIng.wav"));
+            String WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             String refresh="no refresh";
-            mcg.setResult("breakfast", "bagels and creamcheese");
             r.setRecipeTotal(mcg.getResultRecipe());
             r.setRecipeType(mcg.getMealType());
             rl.getChildren().add(r);
@@ -292,15 +311,19 @@ public class AppFrameTest {
             View v= new View(primaryStage, response);
             RecipeList rl = v.getRecipeList();
             MockChatGPT mcg = new MockChatGPT();
-            MockWhisper mv= new MockWhisper();
             String refresh="refresh";
-            mcg.setResult("breakfast", "bagels and creamcheese");
+            MockWhisper mw = new MockWhisper();
+            mw.setResult(new File("MockWhisperTest1.wav"));
+            String WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("BreakfastIng.wav"));
+            String WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             r.setRecipeTotal(mcg.getResultRecipe());
             r.setRecipeType(mcg.getMealType());
             rl.getChildren().add(r);
             String newrecipe="";
             if(refresh== "refresh"){
-                mcg.setResult("breakfast", "bagels and creamcheese");
+                mcg.setResult(WhisperResponse1, WhisperResponse2);
                 newrecipe=mcg.getResultRecipe();
                 r.setRecipeTotal(mcg.getResultRecipe());
                 r.setRecipeType(mcg.getMealType());
@@ -327,16 +350,20 @@ public class AppFrameTest {
             View v= new View(primaryStage, response);
             RecipeList rl = v.getRecipeList();
             MockChatGPT mcg = new MockChatGPT();
-            MockWhisper mv= new MockWhisper();
             String refresh="refresh";
             String cancel="cancel";
-            mcg.setResult("breakfast", "bagels and creamcheese");
+            MockWhisper mw = new MockWhisper();
+            mw.setResult(new File("MockWhisperTest1.wav"));
+            String WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("BreakfastIng.wav"));
+            String WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             r.setRecipeTotal(mcg.getResultRecipe());
             r.setRecipeType(mcg.getMealType());
             rl.getChildren().add(r);
             String newrecipe="";
             if(refresh== "refresh"){
-                mcg.setResult("breakfast", "bagels and creamcheese");
+                mcg.setResult(WhisperResponse1, WhisperResponse2);
                 newrecipe=mcg.getResultRecipe();
                 r.setRecipeTotal(mcg.getResultRecipe());
                 r.setRecipeType(mcg.getMealType());
@@ -366,13 +393,22 @@ public class AppFrameTest {
             View v= new View(primaryStage, response);
             RecipeList rl = v.getRecipeList();
             MockChatGPT mcg = new MockChatGPT();
-            mcg.setResult("breakfast", "bagels and creamcheese");
+            MockWhisper mw = new MockWhisper();
+            mw.setResult(new File("MockWhisperTest1.wav"));
+            String WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("BreakfastIng.wav"));
+            String WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             r.setRecipeTotal(mcg.getResultRecipe());
             r.setRecipeType(mcg.getMealType());
             rl.getChildren().add(r);
             assertEquals(r.getRecipeType().toString(), "breakfast");
 
-            mcg.setResult("lunch", "beef and tomatos");
+            mw.setResult(new File("MockWhisperTest2.wav"));
+            WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("LunchIng.wav"));
+            WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             r2.setRecipeTotal(mcg.getResultRecipe());
             r2.setRecipeType(mcg.getMealType());
             rl.getChildren().add(r2);
@@ -402,13 +438,22 @@ public class AppFrameTest {
             View v= new View(primaryStage, response);
             RecipeList rl = v.getRecipeList();
             MockChatGPT mcg = new MockChatGPT();
-            mcg.setResult("breakfast", "bagels and creamcheese");
+            MockWhisper mw = new MockWhisper();
+            mw.setResult(new File("MockWhisperTest1.wav"));
+            String WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("BreakfastIng.wav"));
+            String WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             r.setRecipeTotal(mcg.getResultRecipe());
             r.setRecipeType(mcg.getMealType());
             rl.getChildren().add(r);
             assertEquals(r.getRecipeType().toString(), "breakfast");
 
-            mcg.setResult("lunch", "beef and tomatos");
+            mw.setResult(new File("MockWhisperTest2.wav"));
+            WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("LunchIng.wav"));
+            WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             r2.setRecipeTotal(mcg.getResultRecipe());
             r2.setRecipeType(mcg.getMealType());
             rl.getChildren().add(r2);
@@ -436,13 +481,22 @@ public class AppFrameTest {
             View v= new View(primaryStage, response);
             RecipeList rl = v.getRecipeList();
             MockChatGPT mcg = new MockChatGPT();
-            mcg.setResult("breakfast", "bagels and creamcheese");
+            MockWhisper mw = new MockWhisper();
+            mw.setResult(new File("MockWhisperTest1.wav"));
+            String WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("BreakfastIng.wav"));
+            String WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             r.setRecipeTotal(mcg.getResultRecipe());
             r.setRecipeType(mcg.getMealType());
             rl.getChildren().add(r);
             assertEquals(r.getRecipeType().toString(), "breakfast");
 
-            mcg.setResult("lunch", "beef and tomatos");
+            mw.setResult(new File("MockWhisperTest2.wav"));
+            WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("LunchIng.wav"));
+            WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             r2.setRecipeTotal(mcg.getResultRecipe());
             r2.setRecipeType(mcg.getMealType());
             rl.getChildren().add(r2);
@@ -473,13 +527,22 @@ public class AppFrameTest {
             View v= new View(primaryStage, response);
             RecipeList rl = v.getRecipeList();
             MockChatGPT mcg = new MockChatGPT();
-            mcg.setResult("breakfast", "bagels and creamcheese");
+            MockWhisper mw = new MockWhisper();
+            mw.setResult(new File("MockWhisperTest1.wav"));
+            String WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("BreakfastIng.wav"));
+            String WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             r.setRecipeTotal(mcg.getResultRecipe());
             r.setRecipeType(mcg.getMealType());
             rl.getChildren().add(r);
             assertEquals(r.getRecipeType().toString(), "breakfast");
 
-            mcg.setResult("lunch", "beef and tomatos");
+            mw.setResult(new File("MockWhisperTest2.wav"));
+            WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("LunchIng.wav"));
+            WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             r2.setRecipeTotal(mcg.getResultRecipe());
             r2.setRecipeType(mcg.getMealType());
             rl.getChildren().add(r2);
@@ -508,13 +571,22 @@ public class AppFrameTest {
             View v= new View(primaryStage, response);
             RecipeList rl = v.getRecipeList();
             MockChatGPT mcg = new MockChatGPT();
-            mcg.setResult("breakfast", "bagels and creamcheese");
+            MockWhisper mw = new MockWhisper();
+            mw.setResult(new File("MockWhisperTest1.wav"));
+            String WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("BreakfastIng.wav"));
+            String WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             r.setRecipeTotal(mcg.getResultRecipe());
             r.setRecipeType(mcg.getMealType());
             rl.getChildren().add(r);
             assertEquals(r.getRecipeType().toString(), "breakfast");
 
-            mcg.setResult("lunch", "beef and tomatos");
+            mw.setResult(new File("MockWhisperTest2.wav"));
+            WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("LunchIng.wav"));
+            WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             r2.setRecipeTotal(mcg.getResultRecipe());
             r2.setRecipeType(mcg.getMealType());
             rl.getChildren().add(r2);
@@ -544,13 +616,22 @@ public class AppFrameTest {
             View v= new View(primaryStage, response);
             RecipeList rl = v.getRecipeList();
             MockChatGPT mcg = new MockChatGPT();
-            mcg.setResult("breakfast", "bagels and creamcheese");
+            MockWhisper mw = new MockWhisper();
+            mw.setResult(new File("MockWhisperTest1.wav"));
+            String WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("BreakfastIng.wav"));
+            String WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             r.setRecipeTotal(mcg.getResultRecipe());
             r.setRecipeType(mcg.getMealType());
             rl.getChildren().add(r);
             assertEquals(r.getRecipeType().toString(), "breakfast");
 
-            mcg.setResult("lunch", "carrot and tomatos");
+            mw.setResult(new File("MockWhisperTest2.wav"));
+            WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("LunchIng.wav"));
+            WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             r2.setRecipeTotal(mcg.getResultRecipe());
             r2.setRecipeType(mcg.getMealType());
             rl.getChildren().add(r2);
@@ -579,13 +660,22 @@ public class AppFrameTest {
             View v= new View(primaryStage, response);
             RecipeList rl = v.getRecipeList();
             MockChatGPT mcg = new MockChatGPT();
-            mcg.setResult("breakfast", "bagels and creamcheese");
+            MockWhisper mw = new MockWhisper();
+            mw.setResult(new File("MockWhisperTest1.wav"));
+            String WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("BreakfastIng.wav"));
+            String WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             r.setRecipeTotal(mcg.getResultRecipe());
             r.setRecipeType(mcg.getMealType());
             rl.getChildren().add(r);
             assertEquals(r.getRecipeType().toString(), "breakfast");
 
-            mcg.setResult("lunch", "carrot and tomatos");
+            mw.setResult(new File("MockWhisperTest2.wav"));
+            WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("LunchIng.wav"));
+            WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
             r2.setRecipeTotal(mcg.getResultRecipe());
             r2.setRecipeType(mcg.getMealType());
             rl.getChildren().add(r2);
@@ -604,6 +694,153 @@ public class AppFrameTest {
         }
     }
 
-   //  */
+    @Test
+    void DallEBDDWithRefresh(){
+        try{
+            Recipe r = new Recipe();
+           
+            Stage primaryStage= new Stage();
+            String response= "hi";
+            View v= new View(primaryStage, response);
+            RecipeList rl = v.getRecipeList();
+            MockChatGPT mcg = new MockChatGPT();
+            String refresh="refresh";
+            MockWhisper mw = new MockWhisper();
+            mw.setResult(new File("MockWhisperTest1.wav"));
+            String WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("BreakfastIng.wav"));
+            String WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
+            r.setRecipeTotal(mcg.getResultRecipe());
+            r.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r);
+            String newrecipe="";
+            if(refresh== "refresh"){
+                mcg.setResult(WhisperResponse1, WhisperResponse2);
+                newrecipe=mcg.getResultRecipe();
+                r.setRecipeTotal(mcg.getResultRecipe());
+                r.setRecipeType(mcg.getMealType());
+            }
+           assertEquals(mcg.getResultRecipe(), newrecipe);
+
+           MockDallE md = new MockDallE();
+           String dallEImage=md.getUrl("breakfast");
+           assertEquals(dallEImage, "breakfast.com");
+
+
+        }catch (ExceptionInInitializerError e) {
+            e.printStackTrace();
+        } catch (NoClassDefFoundError e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void DallEBDDWithoutRefresh(){
+        try{
+            Recipe r = new Recipe();
+           
+           Stage primaryStage= new Stage();
+            String response= "hi";
+            View v= new View(primaryStage, response);
+            RecipeList rl = v.getRecipeList();
+            MockChatGPT mcg = new MockChatGPT();
+            String refresh="no refresh";
+            MockWhisper mw = new MockWhisper();
+            mw.setResult(new File("MockWhisperTest1.wav"));
+            String WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("BreakfastIng.wav"));
+            String WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
+            r.setRecipeTotal(mcg.getResultRecipe());
+            r.setRecipeType(mcg.getMealType());
+            if(refresh=="no refresh"){
+
+                rl.getChildren().add(r);
+                String newrecipe="";
+            }
+           assertEquals(rl.getChildren().contains(r), true);
+
+           MockDallE md = new MockDallE();
+           String dallEImage=md.getUrl("breakfast");
+           assertEquals(dallEImage, "breakfast.com");
+
+        }catch (ExceptionInInitializerError e) {
+            e.printStackTrace();
+        } catch (NoClassDefFoundError e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void ShareURL(){
+        try{
+            Recipe r = new Recipe();
+            Stage primaryStage= new Stage();
+            String response= "hi";
+            View v= new View(primaryStage, response);
+            RecipeList rl = v.getRecipeList();
+            MockChatGPT mcg = new MockChatGPT();
+            MockWhisper mw = new MockWhisper();
+            mw.setResult(new File("MockWhisperTest1.wav"));
+            String WhisperResponse1 = mw.getResults();
+            mw.setResult(new File("BreakfastIng.wav"));
+            String WhisperResponse2 = mw.getResults();
+            mcg.setResult(WhisperResponse1, WhisperResponse2);
+            r.setRecipeTotal(mcg.getResultRecipe());
+            r.setRecipeType(mcg.getMealType());
+            rl.getChildren().add(r);
+            assertEquals(r.getRecipeType().toString(), "breakfast");
+
+            String expected = "localhost:8100/recipe/?=" + r.getRecipeName();
+            assertEquals(r.getLink(), expected);
+
+
+        }catch (ExceptionInInitializerError e) {
+            e.printStackTrace();
+        } catch (NoClassDefFoundError e) {
+            e.printStackTrace();
+        }
+    }
+
+    //TODO
+    @Test
+    void CreateAccountBDD(){
+        String username = "name";
+        String password = "pass";
+        LoginView log = new LoginView();
+
+    }
+
+    //TODO
+    @Test
+    void LoginBDD(){
+        String username = "name";
+        String password = "pass";
+        LoginView log = new LoginView();
+
+    }
+
+    //TODO
+    @Test
+    void ErrorMessageRecognized(){
+
+    }
+
+    //TODO
+    @Test
+    void ErrorMessageNotRecognized(){
+
+    }
+
+    //TODO
+    @Test
+    void ServerNotActive(){
+        Boolean ServerWorking = false;
+        
+        if (ServerWorking == false){
+            System.out.println("");
+        }
+    }
 }
 
