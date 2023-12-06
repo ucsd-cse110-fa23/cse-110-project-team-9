@@ -79,3 +79,16 @@ public class DallE {
         return generatedImageURL;
     }
 }
+
+class MockDallE extends DallE{
+    String url;
+    String breakfastURL = "breakfast.com";
+    String lunchURL = "lunch.com";
+    String dinnerURL = "dinner.com";
+    
+    public String getUrl(String input){
+        if(input == "breakfastMeal"){return breakfastURL;}
+        else if(input == "lunchMeal"){return lunchURL;}
+        else return dinnerURL;
+    }
+}
