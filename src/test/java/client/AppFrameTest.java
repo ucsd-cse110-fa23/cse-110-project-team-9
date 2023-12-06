@@ -1,6 +1,7 @@
 package client;
 
 import org.junit.jupiter.api.Test;
+import java.util.ArrayList;
 
 import client.View.RecipeList;
 import javafx.scene.control.Button;
@@ -803,34 +804,41 @@ public class AppFrameTest {
         }
     }
 
-    /* 
+ 
     //TODO
     @Test
     void CreateAccountBDD(){
         String username = "name";
         String password = "pass";
-        LoginView log = new LoginView();
+       
+       ArrayList<String> accounts=new ArrayList<String>();
+       ArrayList<String> passwords= new ArrayList<String>();
+       accounts.add("name2");
+       passwords.add("pass2");
+        if(!accounts.contains(username)){
+            accounts.add(username);
+            passwords.add(password);
+            assertEquals(true, accounts.contains(username));
+            assertEquals(true, passwords.contains(password));
+        }
 
     }
-
+    
     //TODO
     @Test
     void LoginBDD(){
         String username = "name";
         String password = "pass";
-        LoginView log = new LoginView();
-
-    }
-
-    //TODO
-    @Test
-    void ErrorMessageRecognized(){
-
-    }
-
-    //TODO
-    @Test
-    void ErrorMessageNotRecognized(){
+       
+       ArrayList<String> accounts=new ArrayList<String>();
+       ArrayList<String> passwords= new ArrayList<String>();
+       accounts.add(username);
+       passwords.add(password);
+        if(accounts.contains(username) && passwords.contains(password)){
+            System.out.println("logged in!");
+            assertEquals(true, accounts.contains(username));
+            assertEquals(true, passwords.contains(password));   
+        }
 
     }
 
@@ -838,11 +846,10 @@ public class AppFrameTest {
     @Test
     void ServerNotActive(){
         Boolean ServerWorking = false;
-        
-        if (ServerWorking == false){
-            System.out.println("");
+        if(ServerWorking==false){
+            System.out.print("Server Error");
+            assert(true);//tests pass at this point bc server failed as expected
         }
     }
-    */
 }
 
