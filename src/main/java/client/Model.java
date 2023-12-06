@@ -376,9 +376,10 @@ class MockWhisper extends Whisper{
         if (newRes == breakfast){result = "breakfast";}
         else if (newRes == lunch){result = "lunch";}
         else if (newRes == dinner){result = "dinner";}
-        else if (newRes == dinnerIng){result = "Ingredients: steak, salt, pepper, potatos, carrots, wine, butter, thyme";}
-        else if (newRes == breakfastIng) {result = "Ingredients: flour, butter, yeast, eggs, maple syrup";}
-        else if (newRes == lunchIng) {result = "Ingredients: tortilla, beef, tomato, cheese, salsa";}
+        else if (newRes == dinnerIng){result = "steak, salt, pepper, potatos, carrots, wine, butter, thyme";}
+        else if (newRes == breakfastIng) {result = "flour, butter, yeast, eggs, maple syrup";}
+        else if (newRes == lunchIng) {result = "beef and tomatos";}
+        else{result = "";}
     }
 
     public String getResults(){
